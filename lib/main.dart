@@ -1,4 +1,4 @@
-import 'package:app_freelancer/widgets/Smooth/SmoothScreen.dart';
+
 import 'package:app_freelancer/Pages/StartScreen.dart';
 import 'package:flutter/material.dart';
 

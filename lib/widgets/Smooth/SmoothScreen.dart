@@ -1,10 +1,6 @@
 import 'dart:async';
 
 import 'package:app_freelancer/widgets/Smooth/Pages.dart';
-import 'package:app_freelancer/widgets/Smooth/page_1.dart';
-import 'package:app_freelancer/widgets/Smooth/page_2.dart';
-import 'package:app_freelancer/widgets/Smooth/page_3.dart';
-import 'package:app_freelancer/widgets/Smooth/page_4.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 

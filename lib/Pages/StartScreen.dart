@@ -1,5 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:app_freelancer/Pages/LoginScreen.dart';
+import 'package:app_freelancer/Pages/RegisterScrenn.dart';
 import 'package:app_freelancer/widgets/Buttons/ButtonsChoice.dart';
 import 'package:app_freelancer/widgets/Gradient/GradiendText.dart';
 import 'package:app_freelancer/widgets/Smooth/SmoothScreen.dart';
@@ -86,17 +88,17 @@ class StartScreen extends StatelessWidget {
             const SizedBox(
               height: 50,
             ),
-            const Row(
+             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ButtonsChoice(
                     titlebutton: 'Login',
-                    color: Color(0xFF6ABABD),
+                    color: Color(0xFF6ABABD), widget: PageLogin(),
                   ),
       
                  ButtonsChoice(
                     titlebutton: 'Register',
-                    color: Color(0xFF67CBB7),
+                    color: Color(0xFF67CBB7), widget: Register(),
                   ),
                 
               ],

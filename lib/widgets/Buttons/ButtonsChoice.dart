@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-
 class ButtonsChoice extends StatefulWidget {
-  const ButtonsChoice({super.key,required this.titlebutton, required this.color});
+  const ButtonsChoice(
+      {Key? key, required this.titlebutton, required this.color, required this.widget})
+      : super(key: key);
+
   final String titlebutton;
   final Color color;
+  final Widget widget;
+
   @override
-  _ButtonsChoiceState createState() =>
-      _ButtonsChoiceState();
+  _ButtonsChoiceState createState() => _ButtonsChoiceState();
 }
 
 class _ButtonsChoiceState extends State<ButtonsChoice> {
@@ -33,12 +36,25 @@ class _ButtonsChoiceState extends State<ButtonsChoice> {
         child: InkWell(
           splashColor: Colors.green.withAlpha(30),
           onTap: () {
-            print('Test');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => widget.widget,
+              ),
+            );
           },
           child: SizedBox(
             width: 100,
             height: 50,
-            child: Center(child: Text(widget.titlebutton,style: const TextStyle(fontSize:16, fontWeight:FontWeight.bold,),)),
+            child: Center(
+              child: Text(
+                widget.titlebutton,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ),
       ),
