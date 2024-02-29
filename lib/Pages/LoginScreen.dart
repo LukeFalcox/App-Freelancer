@@ -19,6 +19,7 @@ class _PageLoginState extends State<PageLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
+  double opacity = 0.0;
   Timer? _timer;
 
   @override
@@ -26,6 +27,11 @@ class _PageLoginState extends State<PageLogin> {
     super.initState();
     _loadSavedCredentials();
     _startTimeout();
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        opacity = 1.0;
+      });
+    });
   }
 
   @override
@@ -95,35 +101,38 @@ class _PageLoginState extends State<PageLogin> {
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: Column(
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const StartScreen()),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 32,
-                  )),
-              const SizedBox(
-                height: 40,
-              ),
-              const Text(
-                'Login Users',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(top: 18.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const StartScreen()),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 32,
+                    )),
+                const SizedBox(
+                  height: 40,
+                ),
+                const Text(
+                  'Login Users',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
-            Column(
+          Column(
             children: [
               const Icon(
                 Icons.language_outlined,
@@ -131,41 +140,37 @@ class _PageLoginState extends State<PageLogin> {
                 color: Colors.white,
               ),
               Padding(
-                padding: const EdgeInsets.all(40.0),
+                padding: const EdgeInsets.all(30.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Container(
-                    height: 120,
+                    height: 180,
                     color: const Color.fromARGB(255, 140, 2, 221),
-                    child: const Wrap(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
+                    child: const Wrap(children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
                           "During login, users provide their credentials, like a username and password, to access their account. Secure authentication methods and encryption protect this information. Offering account recovery options and following privacy regulations ensure a safe login process.",
                           style: TextStyle(
                               fontSize: 15,
                               color: Colors.white,
                               fontWeight: FontWeight.w600),
-                                                ),
-                        ),]
-                    ),
+                        ),
+                      ),
+                    ]),
                   ),
                 ),
               )
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
             child: TextField(
               obscureText: true,
               controller: _emailController,
               decoration: const InputDecoration(
                 labelText: 'Email',
-                  hintText: 'example@gmail.com',
+                hintText: 'example@gmail.com',
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     width: 3,
@@ -187,15 +192,14 @@ class _PageLoginState extends State<PageLogin> {
               ),
             ),
           ),
-          const SizedBox(height: 12.0),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 5),
             child: TextField(
               obscureText: true,
               controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Password',
-                  hintText: 'password_example',
+                hintText: 'password_example',
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     width: 3,
@@ -217,7 +221,6 @@ class _PageLoginState extends State<PageLogin> {
               ),
             ),
           ),
-          const SizedBox(height: 12.0),
           Row(
             children: <Widget>[
               Checkbox(
@@ -236,9 +239,42 @@ class _PageLoginState extends State<PageLogin> {
                     color: Colors.white,
                     fontWeight: FontWeight.w600),
               ),
+             
             ],
           ),
-          ButtonsChoice(titlebutton: 'Confirm', color: Colors.green, widget: HomeScreen(), sizebutton: 16)
+           AnimatedOpacity(
+             opacity: opacity,
+             duration: const Duration(seconds: 1),
+             child: Card(
+               color: Colors.green,
+               clipBehavior: Clip.hardEdge,
+               child: InkWell(
+                 splashColor: Colors.green.withAlpha(30),
+                 onTap: () {
+                   Navigator.push(
+                     context,
+                     MaterialPageRoute(
+                       builder: (context) => HomeScreen(),
+                     ),
+                   );
+                 },
+                 child: const SizedBox(
+                   width: 100,
+                   height: 40,
+                   child: Align(
+                     alignment: Alignment.center,
+                     child: Text(
+                       'Confirm',
+                       style: TextStyle(
+                           fontSize: 16,
+                           fontWeight: FontWeight.bold,
+                           color: Colors.white),
+                     ),
+                   ),
+                 ),
+               ),
+             ),
+           ),
         ],
       ),
     );

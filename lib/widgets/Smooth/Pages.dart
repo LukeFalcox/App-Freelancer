@@ -19,7 +19,7 @@ class Pages extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(20.0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(5),
           child: Container(
@@ -38,13 +38,13 @@ class Pages extends StatelessWidget {
                           style: const TextStyle(
                               fontSize: 30, fontWeight: FontWeight.w600),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 5),
                         Expanded(
                           child: Text(
                             text,
                             style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w500),
                           ),
                         ),

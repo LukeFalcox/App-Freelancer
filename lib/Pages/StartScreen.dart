@@ -19,7 +19,7 @@ class StartScreen extends StatelessWidget {
         child: Column(
           children: [
             const Padding(
-              padding: EdgeInsets.only(top: 20.0),
+              padding: EdgeInsets.only(top: 30.0,bottom: 10.0),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: GradientText(
@@ -36,7 +36,7 @@ class StartScreen extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(
-                      top: 50.0, left: 10.0, right: 30.0, bottom: 40.0),
+                      top: 80.0, left: 10.0, right: 30.0, bottom: 40.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30),
                     child: Container(
@@ -57,7 +57,7 @@ class StartScreen extends StatelessWidget {
                           Color.fromARGB(255, 129, 7, 210),
                         ]),
                         style: TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.w600),
+                            fontSize: 26, fontWeight: FontWeight.w600),
                       ),
                       Wrap(
                         children: [

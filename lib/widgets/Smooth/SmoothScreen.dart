@@ -49,19 +49,19 @@ class _SmoothState extends State<Smooth> {
                Pages(
                   title: 'New Settings Features',
                   text:
-                       "Discover the latest additions to our settings menu! We're excited to introduce new customization options that allow you to personalize your experience like never before. From theme customization to notification settings, these new features are designed to enhance your user experience and give you more control over how you use our app. Stay tuned for more updates as we continue to improve and innovate!",
+                       "Discover the latest additions to our settings menu! We're excited to introduce new customization options that allow you to personalize your experience like never before. From theme customization to notification settings, these new features are designed to enhance your user experience and give you more control over how you use our app.",
                   colors1: Color.fromARGB(255, 0, 0, 0),
                   colors2: Color.fromARGB(255, 0, 0, 0)),
                Pages(
                   title: 'New Payment Methods Available',
                   text:
-                      "We're thrilled to announce the introduction of new payment methods! Our goal is to make your transactions smoother and more convenient. With these new options, you can now choose the payment method that best suits your needs and preferences. Whether you prefer credit card, PayPal, or other digital payment methods, we've got you covered. Stay tuned for more updates as we strive to enhance your payment experience!",
+                      "We're thrilled to announce the introduction of new payment methods! Our goal is to make your transactions smoother and more convenient.Whether you prefer credit card, PayPal, or other digital payment methods, we've got you covered. Stay tuned for more updates as we strive to enhance your payment experience!",
                   colors1: Color.fromARGB(255, 0, 0, 0),
                   colors2: Color.fromARGB(255, 0, 0, 0)),
                Pages(
                   title: 'Beta Version Now Available',
                   text:
-                      "We're excited to announce that the beta version of our app is now available! This version includes new features and improvements that we're eager for you to try out. As a beta tester, you'll have the opportunity to provide feedback and help us shape the future of our app. We're committed to delivering the best possible experience, and your input is invaluable. Thank you for being a part of our beta testing program!",
+                      "We're excited to announce that the beta version of our app is now available! This version includes new features and improvements that we're eager for you to try out. As a beta tester, you'll have the opportunity to provide feedback and help us shape the future of our app.",
                   colors1: Color.fromARGB(255, 0, 0, 0),
                   colors2: Color.fromARGB(255, 0, 0, 0)),
             ],
@@ -73,8 +73,8 @@ class _SmoothState extends State<Smooth> {
           effect: ScaleEffect(
             activeDotColor: Color.fromARGB(255, 93, 5, 175),
             dotColor: Color.fromARGB(255, 255, 255, 255),
-            dotHeight: 20,
-            dotWidth: 20,
+            dotHeight: 10,
+            dotWidth: 10,
             spacing: 16,
           ),
         )
