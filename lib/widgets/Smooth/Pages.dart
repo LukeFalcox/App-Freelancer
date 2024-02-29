@@ -21,9 +21,9 @@ class Pages extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(40.0),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(5),
           child: Container(
-            color: Color.fromARGB(255, 24, 137, 213),
+            color: Color.fromARGB(255, 99, 10, 182),
             child: Row(
               children: [
                 Expanded(

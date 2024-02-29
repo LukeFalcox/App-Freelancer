@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+
 class ButtonsChoice extends StatefulWidget {
   const ButtonsChoice(
-      {Key? key, required this.titlebutton, required this.color, required this.widget})
+      {Key? key,
+      required this.titlebutton,
+      required this.color,
+      required this.widget, required this.sizebutton})
       : super(key: key);
 
   final String titlebutton;
   final Color color;
+  final double sizebutton;
   final Widget widget;
 
   @override
@@ -49,10 +54,10 @@ class _ButtonsChoiceState extends State<ButtonsChoice> {
             child: Center(
               child: Text(
                 widget.titlebutton,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(
+                    fontSize: widget.sizebutton,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ),
           ),

@@ -24,8 +24,10 @@ class StartScreen extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 child: GradientText(
                   text: 'CyberFreelancer',
-                  gradient:
-                      LinearGradient(colors: [Colors.white, Colors.white]),
+                  gradient: LinearGradient(colors: [
+                    Color.fromARGB(255, 255, 255, 255),
+                    Colors.white
+                  ]),
                   style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -44,20 +46,20 @@ class StartScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                Expanded(
+                const Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GradientText(
                         text: 'Welcome',
                         gradient: LinearGradient(colors: [
-                          Colors.green.shade300,
-                          Colors.yellow.shade600
+                          Color.fromARGB(255, 129, 7, 210),
+                          Color.fromARGB(255, 129, 7, 210),
                         ]),
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 40, fontWeight: FontWeight.w600),
                       ),
-                      const Wrap(
+                      Wrap(
                         children: [
                           Padding(
                             padding: EdgeInsets.only(top: 5, right: 8.0),
@@ -88,19 +90,21 @@ class StartScreen extends StatelessWidget {
             const SizedBox(
               height: 50,
             ),
-             const Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ButtonsChoice(
-                    titlebutton: 'Login',
-                    color: Color(0xFF6ABABD), widget: PageLogin(),
-                  ),
-      
-                 ButtonsChoice(
-                    titlebutton: 'Register',
-                    color: Color(0xFF67CBB7), widget: Register(),
-                  ),
-                
+                  titlebutton: 'Login',
+                  color: Color.fromARGB(255, 102, 27, 149),
+                  widget: PageLogin(),
+                  sizebutton: 18,
+                ),
+                ButtonsChoice(
+                  titlebutton: 'Register',
+                  color: Color.fromARGB(255, 102, 27, 149),
+                  widget: Register(),
+                  sizebutton: 18,
+                ),
               ],
             )
           ],
