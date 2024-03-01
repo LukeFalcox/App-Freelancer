@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, file_names
 
 import 'package:app_freelancer/Pages/LoginScreen.dart';
 import 'package:app_freelancer/Pages/RegisterScrenn.dart';
@@ -6,7 +6,6 @@ import 'package:app_freelancer/widgets/Buttons/ButtonsChoice.dart';
 import 'package:app_freelancer/widgets/Gradient/GradiendText.dart';
 import 'package:app_freelancer/widgets/Smooth/SmoothScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
