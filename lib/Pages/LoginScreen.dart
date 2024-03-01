@@ -6,8 +6,10 @@ import 'dart:async';
 import 'package:app_freelancer/Pages/RegisterScrenn.dart';
 import 'package:app_freelancer/Pages/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app_freelancer/Pages/HomeScreen.dart';
+import 'package:provider/provider.dart';
 
 class PageLogin extends StatefulWidget {
   const PageLogin({super.key});
@@ -22,6 +24,21 @@ class _PageLoginState extends State<PageLogin> {
   final AuthService _authService = AuthService();
   bool _rememberMe = false;
   double opacity = 0.0;
+
+  sigIn() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      await authService.login(
+          _emailController.text, _passwordController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          e.toString(),
+        ),
+      ));
+    }
+  }
 
   @override
   void initState() {
@@ -105,12 +122,15 @@ class _PageLoginState extends State<PageLogin> {
             Padding(
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
-              child: TextField(
+              child: TextFormField(
+                style: TextStyle(color: Colors.white),
                 obscureText: false,
                 controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   hintText: 'example@gmail.com',
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 27, 27, 27)),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       width: 3,
@@ -135,12 +155,15 @@ class _PageLoginState extends State<PageLogin> {
             Padding(
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 5),
-              child: TextField(
+              child: TextFormField(
+                style: TextStyle(color: Colors.white),
                 obscureText: true,
                 controller: _passwordController,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   hintText: 'password_example',
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 27, 27, 27)),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       width: 3,
@@ -191,36 +214,13 @@ class _PageLoginState extends State<PageLogin> {
                 child: InkWell(
                   splashColor: Colors.green.withAlpha(30),
                   onTap: () async {
-                    // Coloque aqui a lógica de autenticação, e.g., FirebaseAuth.instance.signInWithEmailAndPassword(email, password)
-                    // Substitua isso pela lógica de autenticação real
-                    bool isAuthenticated = await _authenticateUser();
-                    await clickBotao();
-                    if (isAuthenticated) {
+                     await sigIn();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => HomeScreen(),
                         ),
                       );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Error"),
-                            content: const Text("Authentication failed"),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text("OK"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
                   },
                   child: const SizedBox(
                     width: 100,
@@ -254,14 +254,5 @@ class _PageLoginState extends State<PageLogin> {
         ),
       ),
     );
-  }
-
-  clickBotao() async{
-   await  _authService.loginUsers(
-        email: _emailController.text, password: _passwordController.text);
-  }
-
-  Future<bool> _authenticateUser() async {
-    return true;
   }
 }

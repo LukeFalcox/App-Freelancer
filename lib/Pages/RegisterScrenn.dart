@@ -4,11 +4,12 @@ import 'package:app_freelancer/Pages/HomeScreen.dart';
 import 'package:app_freelancer/Pages/LoginScreen.dart';
 import 'package:app_freelancer/Pages/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class Register extends StatefulWidget {
-
   const Register({super.key});
 
   @override
@@ -20,8 +21,26 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmpasswordController =
       TextEditingController();
-  final AuthService _authService = AuthService();
   double opacity = 0.0;
+
+  sigUp() async {
+    if (_passwordController.text != _confirmpasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Different passwords"),
+      ));
+    }
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      authService.registerUsers(
+          _emailController.text, _passwordController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+      ));
+    }
+  }
 
   @override
   void initState() {
@@ -106,10 +125,13 @@ class _RegisterState extends State<Register> {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
               child: TextFormField(
+                style: const TextStyle(color: Colors.white),
                 controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   hintText: 'example@gmail.com',
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 27, 27, 27)),
                   focusColor: Colors.blue,
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(width: 3, color: Color(0xFF5F16B8)),
@@ -141,11 +163,14 @@ class _RegisterState extends State<Register> {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
               child: TextFormField(
+                style: const TextStyle(color: Colors.white),
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   hintText: 'password_example',
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 27, 27, 27)),
                   focusColor: Colors.blue,
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(width: 3, color: Color(0xFF5F16B8)),
@@ -169,10 +194,13 @@ class _RegisterState extends State<Register> {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
               child: TextFormField(
+                style: const TextStyle(color: Colors.white),
                 controller: _confirmpasswordController,
                 decoration: const InputDecoration(
                   labelText: 'Confirm password',
                   hintText: 'password_example',
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 27, 27, 27)),
                   focusColor: Colors.blue,
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(width: 3, color: Color(0xFF5F16B8)),
@@ -204,58 +232,13 @@ class _RegisterState extends State<Register> {
                     child: InkWell(
                       splashColor: Colors.green.withAlpha(30),
                       onTap: () async {
-                        if (_passwordController.text ==
-                            _confirmpasswordController.text) {
-                          bool isAuthenticated = await _authenticateUser();
-                          await clickBotao();
-
-                          if (isAuthenticated) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomeScreen(),
-                              ),
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text("Error"),
-                                  content: const Text("Authentication failed"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: const Text("OK"),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        } else {
-                          // Senhas não correspondem, exibir mensagem de erro
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text("Error"),
-                                content:
-                                    const Text("The passwords is not match"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text("OK"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
+                        await sigUp();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
                       },
                       child: const SizedBox(
                         width: 100,
@@ -290,14 +273,5 @@ class _RegisterState extends State<Register> {
         ),
       ),
     );
-  }
-
-  clickBotao() {
-    _authService.registerUsers(
-        email: _emailController.text, password: _passwordController.text);
-  }
-
-  Future<bool> _authenticateUser() async {
-    return true;
   }
 }

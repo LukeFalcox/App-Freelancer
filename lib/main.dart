@@ -1,7 +1,9 @@
 import 'package:app_freelancer/Pages/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthGate.dart';
+import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -9,7 +11,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => AuthService(),
+    child: const MyApp(),));
 }
 
 class MyApp extends StatelessWidget {
