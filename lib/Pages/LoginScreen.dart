@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:app_freelancer/Pages/RegisterScrenn.dart';
 import 'package:app_freelancer/Pages/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app_freelancer/Pages/HomeScreen.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +20,6 @@ class PageLogin extends StatefulWidget {
 class _PageLoginState extends State<PageLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final AuthService _authService = AuthService();
   bool _rememberMe = false;
   double opacity = 0.0;
 

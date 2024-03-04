@@ -4,7 +4,6 @@ import 'package:app_freelancer/Pages/HomeScreen.dart';
 import 'package:app_freelancer/Pages/LoginScreen.dart';
 import 'package:app_freelancer/Pages/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';

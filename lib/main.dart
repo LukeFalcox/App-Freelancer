@@ -1,5 +1,4 @@
 import 'package:app_freelancer/Pages/StartScreen.dart';
-import 'package:app_freelancer/configs/AuthGate.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
