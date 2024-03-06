@@ -3,11 +3,11 @@
 
 import 'dart:async';
 
-import 'package:app_freelancer/Pages/RegisterScrenn.dart';
-import 'package:app_freelancer/Pages/StartScreen.dart';
+import 'package:app_freelancer/Pages/Sign/RegisterScrenn.dart';
+import 'package:app_freelancer/Pages/Homes/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
-import 'package:app_freelancer/Pages/HomeScreen.dart';
+import 'package:app_freelancer/Pages/Homes/HomeScreen.dart';
 import 'package:provider/provider.dart';
 
 class PageLogin extends StatefulWidget {
@@ -22,21 +22,6 @@ class _PageLoginState extends State<PageLogin> {
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
   double opacity = 0.0;
-
-  sigIn() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-
-    try {
-      await authService.login(
-          _emailController.text, _passwordController.text);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          e.toString(),
-        ),
-      ));
-    }
-  }
 
   @override
   void initState() {
@@ -121,7 +106,7 @@ class _PageLoginState extends State<PageLogin> {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
               child: TextFormField(
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 obscureText: false,
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -154,7 +139,7 @@ class _PageLoginState extends State<PageLogin> {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 5),
               child: TextFormField(
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
                 obscureText: true,
                 controller: _passwordController,
                 decoration: const InputDecoration(
@@ -183,60 +168,69 @@ class _PageLoginState extends State<PageLogin> {
                 ),
               ),
             ),
-            Row(
-              children: <Widget>[
-                Checkbox(
-                  activeColor: Colors.green,
-                  value: _rememberMe,
-                  onChanged: (value) {
-                    setState(() {
-                      _rememberMe = value ?? false;
-                    });
-                  },
+            AnimatedOpacity(
+  opacity: opacity,
+  duration: const Duration(seconds: 1),
+  child: ElevatedButton(
+    onPressed: () async {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            key: Key('authDialog'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 10,
                 ),
-                const Text(
-                  'Remind me',
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                ),
+                Text('Autenticando...'),
               ],
             ),
-            AnimatedOpacity(
-              opacity: opacity,
-              duration: const Duration(seconds: 1),
-              child: Card(
-                color: Colors.green,
-                clipBehavior: Clip.hardEdge,
-                child: InkWell(
-                  splashColor: Colors.green.withAlpha(30),
-                  onTap: () async {
-                     await sigIn();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                      );
+          );
+        },
+      );
+    
+     final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      await authService.login(_emailController.text, _passwordController.text);
+    
+
+        Navigator.pop(context);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      } catch (error) {
+        Navigator.pop(context);
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text('Erro ao autenticar: $error'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
-                  child: const SizedBox(
-                    width: 100,
-                    height: 40,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Confirm',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
+                  child: const Text('OK'),
                 ),
-              ),
-            ),
+              ],
+            );
+          },
+        );
+      }
+    },
+    child: const Text('Confirm'),
+  ),
+),
+
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               const Text('Not is a member?'),
               const SizedBox(width: 4),

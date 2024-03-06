@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names, file_names
 
-import 'package:app_freelancer/Pages/LoginScreen.dart';
-import 'package:app_freelancer/Pages/RegisterScrenn.dart';
+import 'package:app_freelancer/Pages/Sign/LoginScreen.dart';
+import 'package:app_freelancer/Pages/Sign/RegisterScrenn.dart';
 import 'package:app_freelancer/widgets/Buttons/ButtonsChoice.dart';
 import 'package:app_freelancer/widgets/Gradient/GradiendText.dart';
 import 'package:app_freelancer/widgets/Smooth/SmoothScreen.dart';
@@ -85,7 +85,7 @@ class StartScreen extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Smooth(),
+            const Smooth(),
             const SizedBox(
               height: 50,
             ),

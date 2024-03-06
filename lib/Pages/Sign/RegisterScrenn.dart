@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_import, file_names
 
-import 'package:app_freelancer/Pages/HomeScreen.dart';
-import 'package:app_freelancer/Pages/LoginScreen.dart';
-import 'package:app_freelancer/Pages/StartScreen.dart';
+import 'package:app_freelancer/Pages/Homes/HomeScreen.dart';
+import 'package:app_freelancer/Pages/Sign/LoginScreen.dart';
+import 'package:app_freelancer/Pages/Homes/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
