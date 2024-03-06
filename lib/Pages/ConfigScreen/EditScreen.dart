@@ -60,11 +60,11 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 title: "Photo",
                 widget: Column(
                   children: [
-                     Image.asset(
-                        "assets/avatar.png",
-                        width: 70,
-                        height: 70,
-                      ),
+                    //  Image.asset(
+                    //     "assets/avatar.png",
+                    //     width: 70,
+                    //     height: 70,
+                    //   ),
                     TextButton(
                       onPressed: () {},
                       style: TextButton.styleFrom(

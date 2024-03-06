@@ -1,4 +1,5 @@
 import 'package:app_freelancer/Pages/Chat/ChatPage.dart';
+import 'package:app_freelancer/Pages/Homes/StartScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +21,12 @@ class _HomePageChatState extends State<HomePageChat> {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     authService.singOut();
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const StartScreen(),
+        ));
   }
 
   @override
@@ -27,7 +34,9 @@ class _HomePageChatState extends State<HomePageChat> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
-        actions: [IconButton(onPressed: signOut, icon: const Icon(Icons.logout))],
+        actions: [
+          IconButton(onPressed: signOut, icon: const Icon(Icons.logout))
+        ],
       ),
       body: _buildUserList(),
     );
@@ -48,7 +57,6 @@ class _HomePageChatState extends State<HomePageChat> {
             children: snapshot.data!.docs
                 .map<Widget>((doc) => _buildUserListItem(doc))
                 .toList(),
-                
           );
         });
   }

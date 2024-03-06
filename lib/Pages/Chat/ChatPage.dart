@@ -1,5 +1,5 @@
 import 'package:app_freelancer/Pages/Chat/ChatBubble.dart';
-import 'package:app_freelancer/Pages/Chat/ChatService.dart';
+import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
-  final ChatService _chatService = ChatService();
+  final AuthService _chatService = AuthService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   void sendMessage() async {
@@ -84,34 +84,37 @@ class _ChatPageState extends State<ChatPage> {
 
   // build message item
   Widget _buildMessageItem(DocumentSnapshot document) {
-    Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+  Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
-    // align the messages to the rigth if the sender is the current user, otherwise to the left
-    var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid)
-        ? Alignment.centerRight
-        : Alignment.centerLeft;
+  bool isCurrentUser = (data['senderId'] == _firebaseAuth.currentUser!.uid);
 
-    return Container(
-        alignment: alignment,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment:
-                (data['senderID'] == _firebaseAuth.currentUser!.uid)
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-            mainAxisAlignment:
-                (data['senderID'] == _firebaseAuth.currentUser!.uid)
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.start,
-            children: [
-              Text(data['senderEmail'], style: const TextStyle(color: Colors.white),),
-              const SizedBox(height: 5),
-              ChatBubble(message: data['message'])
-            ],
+  Color bubbleColor = isCurrentUser ? Colors.purple : Colors.blue;
+
+
+  var alignment = isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
+
+  return Container(
+    alignment: alignment,
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          Text(
+            data['senderEmail'],
+            style: const TextStyle(color: Colors.white),
           ),
-        ));
-  }
+          const SizedBox(height: 5),
+          ChatBubble(
+            message: data['message'],
+            color: bubbleColor,
+          )
+        ],
+      ),
+    ),
+  );
+}
 
   //build message Input
   _buildMessageInput() {
@@ -146,7 +149,7 @@ class _ChatPageState extends State<ChatPage> {
               icon: const Icon(
                 Icons.arrow_upward,
                 size: 40,
-                color: Color(0xFFFFFFFF) ,
+                color: Color(0xFFFFFFFF),
               ))
         ],
       ),

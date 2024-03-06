@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, avoid_print
 
+import 'package:app_freelancer/Pages/Chat/Message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,79 @@ class AuthService extends ChangeNotifier {
     await FirebaseAuth.instance.signOut();
   }
 
+  // void registerCard(
+  //   String title,
+  //   String desc,
+  //   String user,
+  //   String value,
+  // ) async {
+  //   try {
+  //     FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //     final infocard = <String, dynamic>{
+  //       'title': title,
+  //       'desc': desc,
+  //       'user': user,
+  //       'value': value,
+  //       };
+      
+  //     firestore.collection('cards').doc(_firebaseAuth.currentUser!.uid).set(infocard);
+      
+  //   } catch (e) {
+  //     print('Error creating card: $e');
+  //   }
+  // }'
+
+  // Widget returnCard() {
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+    
+  //   firestore.collection('cards').doc(_firebaseAuth.currentUser!.uid)
+
+        
+
+  //   DocumentSnapshot snapshot = await c
+  // }
+
   Future<void> singOut() async {
     return await FirebaseAuth.instance.signOut();
+  }
+
+  Future<void> sendMessage(String receiverId, String message) async {
+    //get current user info
+    final String currentUserId = _firebaseAuth.currentUser!.uid;
+    final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
+    final Timestamp timestamp = Timestamp.now();
+
+    Message newMessage = Message(
+      senderId: currentUserId,
+      senderEmail: currentUserEmail,
+      receiverId: receiverId,
+      message: message,
+      timestamp: timestamp,
+    );
+
+    List<String> ids = [currentUserId, receiverId];
+    ids.sort();
+    String chatRoomId = ids.join("_");
+    // add new message to database
+    await _firestore
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .add(newMessage.toMap());
+  }
+
+  //GET MESSAGES
+
+  Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
+    List<String> ids = [userId, otherUserId];
+    ids.sort();
+    String chatRoomId = ids.join("_");
+
+    return _firestore
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots();
   }
 }
