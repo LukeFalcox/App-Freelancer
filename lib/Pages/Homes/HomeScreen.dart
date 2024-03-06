@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 
+import 'package:app_freelancer/Pages/ConfigScreen/AccountScreen.dart';
 import 'package:app_freelancer/Pages/Homes/HomePageChat.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -22,7 +23,12 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   IconButton(
                       hoverColor: const Color(0xFF3D3D3D),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AccountScreen()));
+                      },
                       icon: const Icon(Ionicons.settings)),
                   IconButton(
                       hoverColor: const Color(0xFF3D3D3D),

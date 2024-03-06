@@ -48,6 +48,7 @@ class _HomePageChatState extends State<HomePageChat> {
             children: snapshot.data!.docs
                 .map<Widget>((doc) => _buildUserListItem(doc))
                 .toList(),
+                
           );
         });
   }

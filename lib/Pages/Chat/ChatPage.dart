@@ -1,4 +1,3 @@
-
 import 'package:app_freelancer/Pages/Chat/ChatBubble.dart';
 import 'package:app_freelancer/Pages/Chat/ChatService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,8 +32,18 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        title: Text(widget.userEmail),
+          iconTheme: const IconThemeData(
+            color: Colors.white, // Defina a cor desejada aqui
+          ),
+        backgroundColor: const Color(0xDF000000),
+        title: Text(
+          widget.userEmail,
+          style: const TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        
       ),
       body: Column(children: [
         //messages
@@ -96,7 +105,7 @@ class _ChatPageState extends State<ChatPage> {
                     ? MainAxisAlignment.end
                     : MainAxisAlignment.start,
             children: [
-              Text(data['senderEmail']),
+              Text(data['senderEmail'], style: const TextStyle(color: Colors.white),),
               const SizedBox(height: 5),
               ChatBubble(message: data['message'])
             ],
@@ -114,28 +123,30 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: TextField(
               controller: _messageController,
-      obscureText: false,
-      decoration: InputDecoration(
-          enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Color.fromARGB(255, 147, 3, 214)),
-      ),
-      fillColor: Colors.grey[400],
-      filled: true,
-      hintText: 'Enter the Message',
-      hintStyle: const TextStyle(color: Colors.grey),
-      ),
+              obscureText: false,
+              decoration: InputDecoration(
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                ),
+                fillColor: Colors.grey[700],
+                filled: true,
+                hintText: 'Enter the Message',
+                hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+              ),
             ),
           ),
-      
+
           //send button
           IconButton(
               onPressed: sendMessage,
               icon: const Icon(
                 Icons.arrow_upward,
                 size: 40,
+                color: Color(0xFFFFFFFF) ,
               ))
         ],
       ),
