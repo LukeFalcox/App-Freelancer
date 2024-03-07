@@ -225,36 +225,64 @@ class _RegisterState extends State<Register> {
                 child: AnimatedOpacity(
                   opacity: opacity,
                   duration: const Duration(seconds: 1),
-                  child: Card(
-                    color: Colors.green,
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      splashColor: Colors.green.withAlpha(30),
-                      onTap: () async {
-                        await sigUp();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomeScreen(),
-                          ),
-                        );
-                      },
-                      child: const SizedBox(
-                        width: 100,
-                        height: 40,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Confirm',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  child: ElevatedButton(
+    onPressed: () async {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            key: Key('authDialog'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Autenticando...'),
+              ],
+            ),
+          );
+        },
+      );
+    
+     final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      await authService.registerUsers(_emailController.text, _passwordController.text);
+    
+
+        Navigator.pop(context);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      } catch (error) {
+        Navigator.pop(context);
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text('Erro ao autenticar: $error'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    },
+    child: const Text('Confirm'),
+  ),
                 )),
             const SizedBox(height: 50),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [

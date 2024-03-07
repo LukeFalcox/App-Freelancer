@@ -30,14 +30,20 @@ class _HomePageChatState extends State<HomePageChat> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-        actions: [
-          IconButton(onPressed: signOut, icon: const Icon(Icons.logout))
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Home Page'),
+      //   actions: [
+      //     IconButton(onPressed: signOut, icon: const Icon(Icons.logout))
+      //   ],
+      // ),
       body: _buildUserList(),
     );
   }
@@ -65,17 +71,25 @@ class _HomePageChatState extends State<HomePageChat> {
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
 
     if (_auth.currentUser!.email != data['email']) {
-      return ListTile(
-        title: Text(data['email']),
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                        userEmail: data['email'],
-                        receiverUserID: data['uid'],
-                      )));
-        },
+      return Column(
+        children: [
+          ListTile(
+            title: Text(
+              data['email'],
+              // style: TextStyle(color: Colors.white),
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                            userEmail: data['email'],
+                            receiverUserID: data['uid'],
+                          )));
+            },
+          ),
+          Divider()
+        ],
       );
     } else {
       return Container();
