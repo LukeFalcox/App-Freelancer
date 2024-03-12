@@ -22,7 +22,7 @@ class _CardCreateState extends State<CardCreate> {
             child: Container(
               width: 550,
               height: 600,
-              color: Colors.red,
+              color: const Color.fromARGB(218, 65, 62, 62),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -35,13 +35,31 @@ class _CardCreateState extends State<CardCreate> {
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: TextField(
-                            decoration: InputDecoration(
-                                labelText: 'Name of Service',
-                                border: OutlineInputBorder(
-                                  borderSide: const BorderSide(width: 3),
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
-                          ),
+                              decoration: InputDecoration(
+                            labelText: 'Name of Service',
+                            labelStyle: const TextStyle(color: Colors.white),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Color(0xFF5F16B8),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Color(0xFF1B93F5),
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Color.fromARGB(255, 95, 90, 90),
+                              ),
+                            ),
+                          )),
                         ),
                       ),
                     ),
@@ -57,23 +75,43 @@ class _CardCreateState extends State<CardCreate> {
                             crossAxisAlignment:
                                 CrossAxisAlignment.start, // Alinhado à esquerda
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(13, 0, 0, 0),
-                                child: Text(
-                                  'Description',
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.black),
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: EdgeInsets.fromLTRB(13, 0, 0, 0),
+                              //   child: Text(
+                              //     'Description',
+                              //     style: TextStyle(
+                              //         fontSize: 14, color: Colors.black),
+                              //   ),
+                              // ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: TextField(
                                   maxLines:
                                       12, // Permite múltiplas linhas de texto
                                   decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(width: 3),
+                                    labelText: 'Description',
+                                    labelStyle:
+                                        const TextStyle(color: Colors.white),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: const BorderSide(
+                                        width: 3,
+                                        color: Color(0xFF5F16B8),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: const BorderSide(
+                                        width: 3,
+                                        color: Color(0xFF1B93F5),
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      borderSide: const BorderSide(
+                                        width: 3,
+                                        color: Color(0xFFF73123),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -82,7 +120,9 @@ class _CardCreateState extends State<CardCreate> {
                           ),
                         ),
                       ),
-                       SizedBox(width: 20,),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       Container(
                         decoration: BoxDecoration(
                           color: Colors
@@ -92,8 +132,8 @@ class _CardCreateState extends State<CardCreate> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                               child: Text(
                                 'Day:',
                                 style: TextStyle(color: Colors.black),
@@ -111,8 +151,10 @@ class _CardCreateState extends State<CardCreate> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 20,),
-                       Container(
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Container(
                         decoration: BoxDecoration(
                           color: Colors
                               .grey[200], // Altere para a cor desejada de fundo
@@ -121,8 +163,8 @@ class _CardCreateState extends State<CardCreate> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                               child: Text(
                                 'Month:',
                                 style: TextStyle(color: Colors.black),
@@ -151,26 +193,65 @@ class _CardCreateState extends State<CardCreate> {
                           child: TextField(
                             decoration: InputDecoration(
                               labelText: 'Propost-Min',
-                              border: OutlineInputBorder(
-                                borderSide: const BorderSide(width: 3),
-                                borderRadius: BorderRadius.circular(10),
+                              labelStyle: const TextStyle(color: Colors.white),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: const BorderSide(
+                                  width: 3,
+                                  color: Color(0xFF5F16B8),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: const BorderSide(
+                                  width: 3,
+                                  color: const Color(0xFF1B93F5),
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: const BorderSide(
+                                  width: 3,
+                                  color: Color(0xFFF73123),
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
+                      SizedBox(width: 20,),
                       SizedBox(
                         width: 135,
                         child: TextField(
                           decoration: InputDecoration(
                             labelText: 'Propost-Max',
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(width: 3),
-                              borderRadius: BorderRadius.circular(10),
+                            labelStyle: const TextStyle(color: Colors.white),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Color(0xFF5F16B8),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Color(0xFF1B93F5),
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Color(0xFFF73123),
+                              ),
                             ),
                           ),
                         ),
                       ),
+                      SizedBox(width: 120,),
+                      TextButton(onPressed: () {}, child: const Text('Confirmar'))
                     ],
                   ),
                 ],
@@ -190,6 +271,7 @@ class _CardCreateState extends State<CardCreate> {
     }
     return items;
   }
+
   List<DropdownMenuItem<int>> _buildDropdownItemsMonth() {
     List<DropdownMenuItem<int>> items = [];
     for (int i = 1; i <= 12; i++) {
