@@ -2,7 +2,6 @@ import 'package:app_freelancer/Pages/ConfigScreen/EditScreen.dart';
 import 'package:app_freelancer/Pages/Homes/HomeScreen.dart';
 import 'package:app_freelancer/widgets/ConfigsWidgets/ForwadButtons.dart';
 import 'package:app_freelancer/widgets/ConfigsWidgets/SettingItem.dart';
-import 'package:app_freelancer/widgets/ConfigsWidgets/SettingSwitch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ionicons/ionicons.dart';
@@ -117,19 +116,6 @@ class _AccountScreenState extends State<AccountScreen> {
                 bgColor: Colors.blue.shade100,
                 iconColor: Colors.blue,
                 onTap: () {},
-              ),
-              const SizedBox(height: 20),
-              SettingSwitch(
-                title: "Dark Mode",
-                icon: Ionicons.earth,
-                bgColor: Colors.purple.shade100,
-                iconColor: Colors.purple,
-                value: isDarkMode,
-                onTap: (value) {
-                  setState(() {
-                    isDarkMode = value;
-                  });
-                },
               ),
               const SizedBox(height: 20),
               SettingItem(

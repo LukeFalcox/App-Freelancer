@@ -38,12 +38,14 @@ class _HomePageChatState extends State<HomePageChat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Home Page'),
-      //   actions: [
-      //     IconButton(onPressed: signOut, icon: const Icon(Icons.logout))
-      //   ],
-      // ),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text('Chats',style: TextStyle(color:  Colors.white),),
+        actions: [
+          IconButton(onPressed: signOut, icon: const Icon(Icons.logout, color: Colors.white,))
+        ],
+      ),
       body: _buildUserList(),
     );
   }
@@ -76,7 +78,7 @@ class _HomePageChatState extends State<HomePageChat> {
           ListTile(
             title: Text(
               data['email'],
-              // style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white),
             ),
             onTap: () {
               Navigator.push(

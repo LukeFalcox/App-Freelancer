@@ -32,30 +32,34 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      // backgroundColor: const Color(0xFF000000),
       body: PageView(
         controller: pageCont,
         onPageChanged: setCurrentPage,
-        children:   [
+        children: [
           Works(),
           const HomePageChat(),
           const AccountScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF0C0C0C),
+        backgroundColor: Color.fromARGB(255, 0, 0, 0),
         currentIndex: currentPage,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,color: Colors.purple),
+            icon: Icon(Icons.home, color: Color.fromARGB(255, 156, 11, 204)),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble,color: Colors.purple),
+            icon: Icon(Icons.chat_bubble,
+                color: Color.fromARGB(255, 156, 11, 204)),
             label: 'Chat',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings,color: Colors.purple,),
+            icon: Icon(
+              Icons.settings,
+              color: Color.fromARGB(255, 156, 11, 204),
+            ),
             label: 'Settings',
           ),
         ],
