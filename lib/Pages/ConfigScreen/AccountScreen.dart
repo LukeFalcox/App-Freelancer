@@ -2,6 +2,8 @@ import 'package:app_freelancer/Pages/ConfigScreen/EditScreen.dart';
 import 'package:app_freelancer/Pages/Homes/HomeScreen.dart';
 import 'package:app_freelancer/widgets/ConfigsWidgets/ForwadButtons.dart';
 import 'package:app_freelancer/widgets/ConfigsWidgets/SettingItem.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ionicons/ionicons.dart';
@@ -16,6 +18,9 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   bool isDarkMode = false;
 
+
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,19 +63,19 @@ class _AccountScreenState extends State<AccountScreen> {
                 width: double.infinity,
                 child: Row(
                   children: [
-                    const Column(
+                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Uranus Code",
-                          style: TextStyle(
+                          _auth.currentUser!.email ?? 'Email não disponível',
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          "Youtube Channel",
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Developer",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
