@@ -3,6 +3,7 @@
 import 'package:app_freelancer/Pages/ConfigScreen/AccountScreen.dart';
 import 'package:app_freelancer/Pages/Homes/HomePageChat.dart';
 import 'package:app_freelancer/Pages/Works/WorkScreen.dart';
+import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
@@ -37,9 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: pageCont,
         onPageChanged: setCurrentPage,
         children: [
-          Works(),
+          Works(authService: AuthService(),),
           const HomePageChat(),
           const AccountScreen(),
+          
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

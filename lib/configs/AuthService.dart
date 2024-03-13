@@ -48,37 +48,33 @@ class AuthService extends ChangeNotifier {
     await FirebaseAuth.instance.signOut();
   }
 
-  // void registerCard(
-  //   String title,
-  //   String desc,
-  //   String user,
-  //   String value,
-  // ) async {
-  //   try {
-  //     FirebaseFirestore firestore = FirebaseFirestore.instance;
-  //     final infocard = <String, dynamic>{
-  //       'title': title,
-  //       'desc': desc,
-  //       'user': user,
-  //       'value': value,
-  //       };
-      
-  //     firestore.collection('cards').doc(_firebaseAuth.currentUser!.uid).set(infocard);
-      
-  //   } catch (e) {
-  //     print('Error creating card: $e');
-  //   }
-  // }'
+  void registerCard(String title, String desc, int propostMin, int propostMax,
+      int selectedDay, int selectedMonth) async {
+    try {
+      final infocard = <String, dynamic>{
+        'title': title,
+        'desc': desc,
+        "propostMin": propostMin,
+        "propostMax": propostMax,
+        "selectedDay": selectedDay,
+        "selectedMonth": selectedMonth,
+      };
 
-  // Widget returnCard() {
-  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
-    
-  //   firestore.collection('cards').doc(_firebaseAuth.currentUser!.uid)
+      await _firestore.collection('cards').doc().set(infocard);
+    } catch (e) {
+      print('Error creating card: $e');
+    }
+  }
 
-        
+Future<List<Map<String, dynamic>>> getData() async {
+  QuerySnapshot<Map<String, dynamic>> snapshot =
+      await _firestore.collection('cards').get();
 
-  //   DocumentSnapshot snapshot = await c
-  // }
+  List<Map<String, dynamic>> cards =
+      snapshot.docs.map((doc) => doc.data()).toList();
+  return cards;
+}
+
 
   Future<void> singOut() async {
     return await FirebaseAuth.instance.signOut();

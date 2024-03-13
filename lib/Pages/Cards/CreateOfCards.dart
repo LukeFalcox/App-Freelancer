@@ -1,6 +1,9 @@
+import 'package:app_freelancer/Pages/Homes/HomeScreen.dart';
+import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class CardCreate extends StatefulWidget {
   const CardCreate({Key? key}) : super(key: key);
@@ -12,6 +15,11 @@ class CardCreate extends StatefulWidget {
 class _CardCreateState extends State<CardCreate> {
   int? _selectedDay;
   int? _selectedMonth;
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descController = TextEditingController();
+  TextEditingController _userController = TextEditingController();
+  TextEditingController _minProstController = TextEditingController();
+  TextEditingController _maxProstController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,31 +43,34 @@ class _CardCreateState extends State<CardCreate> {
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: TextField(
+                              style: const TextStyle(color: Colors.white),
+                              controller: _titleController,
                               decoration: InputDecoration(
-                            labelText: 'Name of Service',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                width: 3,
-                                color: Color(0xFF5F16B8),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                width: 3,
-                                color: Color(0xFF1B93F5),
-                              ),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                width: 3,
-                                color: Color.fromARGB(255, 95, 90, 90),
-                              ),
-                            ),
-                          )),
+                                labelText: 'Name of Service',
+                                labelStyle:
+                                    const TextStyle(color: Colors.white),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    width: 3,
+                                    color: Color(0xFF5F16B8),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    width: 3,
+                                    color: Color(0xFF1B93F5),
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    width: 3,
+                                    color: Color.fromARGB(255, 95, 90, 90),
+                                  ),
+                                ),
+                              )),
                         ),
                       ),
                     ),
@@ -75,17 +86,11 @@ class _CardCreateState extends State<CardCreate> {
                             crossAxisAlignment:
                                 CrossAxisAlignment.start, // Alinhado à esquerda
                             children: [
-                              // Padding(
-                              //   padding: EdgeInsets.fromLTRB(13, 0, 0, 0),
-                              //   child: Text(
-                              //     'Description',
-                              //     style: TextStyle(
-                              //         fontSize: 14, color: Colors.black),
-                              //   ),
-                              // ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: TextField(
+                                  style: const TextStyle(color: Colors.white),
+                                  controller: _descController,
                                   maxLines:
                                       12, // Permite múltiplas linhas de texto
                                   decoration: InputDecoration(
@@ -191,6 +196,8 @@ class _CardCreateState extends State<CardCreate> {
                         child: SizedBox(
                           width: 135,
                           child: TextField(
+                            style: const TextStyle(color: Colors.white),
+                            controller: _minProstController,
                             decoration: InputDecoration(
                               labelText: 'Propost-Min',
                               labelStyle: const TextStyle(color: Colors.white),
@@ -205,7 +212,7 @@ class _CardCreateState extends State<CardCreate> {
                                 borderRadius: BorderRadius.circular(20),
                                 borderSide: const BorderSide(
                                   width: 3,
-                                  color: const Color(0xFF1B93F5),
+                                  color: Color(0xFF1B93F5),
                                 ),
                               ),
                               errorBorder: OutlineInputBorder(
@@ -219,10 +226,14 @@ class _CardCreateState extends State<CardCreate> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20,),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       SizedBox(
                         width: 135,
                         child: TextField(
+                          controller: _maxProstController,
+                          style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             labelText: 'Propost-Max',
                             labelStyle: const TextStyle(color: Colors.white),
@@ -250,8 +261,95 @@ class _CardCreateState extends State<CardCreate> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 120,),
-                      TextButton(onPressed: () {}, child: const Text('Confirmar'))
+                      const SizedBox(
+                        width: 80,
+                      ),
+                      TextButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.blue), // Cor de fundo do botão
+                          padding:
+                              MaterialStateProperty.all<EdgeInsetsGeometry>(
+                            const EdgeInsets.symmetric(
+                                vertical: 24, horizontal: 24),
+                          ),
+                          shape: MaterialStateProperty.all<OutlinedBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(8), // Borda arredondada
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          'Confirmar',
+                          style: TextStyle(
+                            color: Colors.white, // Cor do texto
+                            fontSize: 16, // Tamanho da fonte
+                            fontWeight: FontWeight.bold, // Peso da fonte
+                          ),
+                        ),
+                       onPressed: () async {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            key: Key('authDialog'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Autenticando...'),
+              ],
+            ),
+          );
+        },
+      );
+    
+     final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+       authService.registerCard(
+                                _titleController.text,
+                                _descController.text,
+                                _minProstController.hashCode,
+                                _maxProstController.hashCode,
+                                _selectedDay!,
+                                _selectedMonth!);
+    
+
+        Navigator.pop(context);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      } catch (error) {
+                            Navigator.pop(context);
+
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Text('Erro ao autenticar: $error'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ],
