@@ -48,7 +48,7 @@ class AuthService extends ChangeNotifier {
     await FirebaseAuth.instance.signOut();
   }
 
-  void registerCard(String title, String desc, int propostMin, int propostMax,
+  void registerCard(String title, String desc, String propostMin, String propostMax,
       int selectedDay, int selectedMonth) async {
     try {
       final infocard = <String, dynamic>{

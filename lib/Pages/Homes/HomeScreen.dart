@@ -38,19 +38,20 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: pageCont,
         onPageChanged: setCurrentPage,
         children: [
-          Works(authService: AuthService(),),
+          Works(
+            authService: AuthService(),
+          ),
           const HomePageChat(),
           const AccountScreen(),
-          
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: Color.fromARGB(215, 0, 0, 0),
         currentIndex: currentPage,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Color.fromARGB(255, 156, 11, 204)),
-            label: 'Home',
+            icon: Icon(Icons.work, color: Color.fromARGB(255, 114, 0, 152)),
+            label: 'Works',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble,

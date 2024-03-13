@@ -1,6 +1,7 @@
 import 'package:app_freelancer/Pages/Cards/CreateOfCards.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class Works extends StatefulWidget {
@@ -41,11 +42,43 @@ class _WorksState extends State<Works> {
               itemBuilder: (context, index) {
                 return Card(
                   child: ListTile(
-                    title: Text(jobs[index]['title'] ?? 'Sem título'),
-                    subtitle: Text(jobs[index]['desc'] ?? 'Sem descrição'),
-                    onTap: () {
-                    
-                    },
+                    title: Text(
+                      jobs[index]['title'] ?? 'Sem título',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 5),
+                        Text(
+                          jobs[index]['desc'] ?? 'Sem descrição',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Prazo: ${jobs[index]['selectedDay']}/${jobs[index]['selectedMonth']}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Proposta Mínima: ${jobs[index]['propostMin']} ~ Proposta Máxima: ${jobs[index]['propostMax']}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                    onTap: () {},
                   ),
                 );
               },
@@ -57,11 +90,11 @@ class _WorksState extends State<Works> {
         alignment: Alignment.bottomRight,
         child: IconButton(
           onPressed: () {
-              Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CardCreate(),
-                          ));
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CardCreate(),
+                ));
           },
           icon: const Icon(Icons.card_membership_sharp),
         ),
