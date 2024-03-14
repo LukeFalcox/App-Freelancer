@@ -15,24 +15,20 @@ class CardCreate extends StatefulWidget {
 class _CardCreateState extends State<CardCreate> {
   int? _selectedDay;
   int? _selectedMonth;
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _descController = TextEditingController();
-  TextEditingController _userController = TextEditingController();
-  TextEditingController _minProstController = TextEditingController();
-  TextEditingController _maxProstController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
+  // final TextEditingController _userController = TextEditingController();
+  final TextEditingController _minProstController = TextEditingController();
+  final TextEditingController _maxProstController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
        appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text('Chats',style: TextStyle(color:  Colors.white),),
-        actions: [
-          IconButton(onPressed: (){Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
-        ));}, icon: const Icon(Icons.arrow_forward_outlined, color: Colors.white,))
-        ],
+        iconTheme: const IconThemeData(
+            color: Colors.white, // Defina a cor desejada aqui
+          ),
       ),
         backgroundColor: Colors.black,
         body: Center(

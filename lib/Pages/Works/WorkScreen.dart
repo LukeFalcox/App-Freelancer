@@ -2,7 +2,6 @@ import 'package:app_freelancer/Pages/Cards/CreateOfCards.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 
 class Works extends StatefulWidget {
   final AuthService authService;
@@ -90,7 +89,7 @@ class _WorksState extends State<Works> {
         alignment: Alignment.bottomRight,
         child: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const CardCreate(),

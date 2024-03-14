@@ -20,7 +20,6 @@ class PageLogin extends StatefulWidget {
 class _PageLoginState extends State<PageLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _rememberMe = false;
   double opacity = 0.0;
 
   @override

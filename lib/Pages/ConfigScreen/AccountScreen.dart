@@ -2,7 +2,6 @@ import 'package:app_freelancer/Pages/ConfigScreen/EditScreen.dart';
 import 'package:app_freelancer/Pages/Homes/HomeScreen.dart';
 import 'package:app_freelancer/widgets/ConfigsWidgets/ForwadButtons.dart';
 import 'package:app_freelancer/widgets/ConfigsWidgets/SettingItem.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

@@ -5,7 +5,6 @@ import 'package:app_freelancer/Pages/Homes/HomePageChat.dart';
 import 'package:app_freelancer/Pages/Works/WorkScreen.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -74,42 +73,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-//  bottomNavigationBar: BottomAppBar(
-//           color: const Color(0xFF0C0C0C),
-//           child: IconTheme(
-//             data: const IconThemeData(color: Color(0xE78003C3)),
-//             child: Padding(
-//               padding: const EdgeInsets.all(8),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-//                 children: [
-//                   IconButton(
-//                       hoverColor: const Color(0xFF3D3D3D),
-//                       onPressed: () {
-//                         Navigator.push(
-//                             context,
-//                             MaterialPageRoute(
-//                                 builder: (context) => const));
-//                       },
-//                       icon: const Icon(Ionicons.settings)),
-//                   IconButton(
-//                       hoverColor: const Color(0xFF3D3D3D),
-//                       onPressed: () {},
-//                       icon: const Icon(Ionicons.home)),
-//                   IconButton(
-//                       hoverColor: const Color(0xFF3D3D3D),
-//                       onPressed: () {
-//                         Navigator.push(
-//                             context,
-//                             MaterialPageRoute(
-//                                 builder: (context) => const ));
-//                       },
-//                       icon: const Icon(Ionicons.chatbox)),
-//                   IconButton(
-//                       hoverColor: const Color(0xFF3D3D3D),
-//                       onPressed: () {},
-//                       icon: const Icon(Ionicons.person)),
-//                 ],
-//               ),
-//             ),
-//           )),
