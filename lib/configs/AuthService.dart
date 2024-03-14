@@ -9,7 +9,7 @@ class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<UserCredential> registerUsers(String email, String password) async {
+  Future<UserCredential> registerUsers(String username,String email, String password) async {
     try {
       await FirebaseAuth.instance.setLanguageCode('en_US');
       UserCredential userCredential = await _firebaseAuth
@@ -19,6 +19,7 @@ class AuthService extends ChangeNotifier {
         {
           'uid': userCredential.user!.uid,
           'email': email,
+          'username': username
         },
       );
       return userCredential;

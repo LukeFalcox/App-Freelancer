@@ -20,6 +20,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmpasswordController =
       TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   double opacity = 0.0;
 
   sigUp() async {
@@ -32,8 +33,8 @@ class _RegisterState extends State<Register> {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     try {
-      authService.registerUsers(
-          _emailController.text, _passwordController.text);
+      authService.registerUsers(_usernameController.text, _emailController.text,
+          _passwordController.text);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -119,6 +120,44 @@ class _RegisterState extends State<Register> {
                   ),
                 )
               ],
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
+              child: TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'User Name',
+                  hintText: 'ExampleName',
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 27, 27, 27)),
+                  focusColor: Colors.blue,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 3, color: Color(0xFF5F16B8)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 3, color: Color(0xFF1B93F5)),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(width: 3, color: Color(0xFFF73123)),
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Please, insert your email.';
+                  }
+                  if (value.length < 9) {
+                    return "This e-mail is very short";
+                  }
+
+                  if (!value.contains('@')) {
+                    return "This e-mail isn't valid";
+                  }
+                  // Adicione outras validações aqui, se necessário
+                  return null;
+                },
+              ),
             ),
             Padding(
               padding:
@@ -226,63 +265,60 @@ class _RegisterState extends State<Register> {
                   opacity: opacity,
                   duration: const Duration(seconds: 1),
                   child: ElevatedButton(
-    onPressed: () async {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return const AlertDialog(
-            key: Key('authDialog'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(
-                  height: 10,
-                ),
-                Text('Autenticando...'),
-              ],
-            ),
-          );
-        },
-      );
-    
-     final authService = Provider.of<AuthService>(context, listen: false);
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const AlertDialog(
+                            key: Key('authDialog'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Autenticando...'),
+                              ],
+                            ),
+                          );
+                        },
+                      );
 
-    try {
-      await authService.registerUsers(_emailController.text, _passwordController.text);
-    
+                      try {
+                      await sigUp();
 
-        Navigator.pop(context);
+                        Navigator.pop(context);
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ),
-        );
-      } catch (error) {
-        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
+                        );
+                      } catch (error) {
+                        Navigator.pop(context);
 
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: Text('Erro ao autenticar: $error'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    },
-    child: const Text('Confirm'),
-  ),
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text('Erro ao autenticar: $error'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: const Text('Confirm'),
+                  ),
                 )),
             const SizedBox(height: 50),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [

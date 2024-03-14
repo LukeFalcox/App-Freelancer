@@ -1,4 +1,4 @@
-import 'package:app_freelancer/Pages/Cards/CreateOfCards.dart';
+import 'package:app_freelancer/Pages/ChoiceClientorFreelanncer/ChoiceFreelancer.dart';
 import 'package:app_freelancer/configs/CheckAuthState.dart';
 import 'package:app_freelancer/configs/AuthService.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +23,6 @@ class MyApp extends StatelessWidget {
     return   const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'CyberFreenlancer',
-        home: CheckAuthState());
+        home: FreelancerOrClient());
   }
 }
