@@ -50,7 +50,7 @@ class AuthService extends ChangeNotifier {
   }
 
   void registerCard(String title, String desc, String propostMin, String propostMax,
-      int selectedDay, int selectedMonth) async {
+      int selectedDay, int selectedMonth, String email) async {
     try {
       final infocard = <String, dynamic>{
         'title': title,
@@ -59,6 +59,7 @@ class AuthService extends ChangeNotifier {
         "propostMax": propostMax,
         "selectedDay": selectedDay,
         "selectedMonth": selectedMonth,
+        "user": email
       };
 
       await _firestore.collection('cards').doc().set(infocard);

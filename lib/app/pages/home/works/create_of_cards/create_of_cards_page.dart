@@ -1,5 +1,6 @@
 import 'package:app_freelancer/app/pages/home/home_page.dart';
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 
 class CardCreate extends StatefulWidget {
   const CardCreate({Key? key}) : super(key: key);
+  
 
   @override
   State<CardCreate> createState() => _CardCreateState();
@@ -15,13 +17,20 @@ class CardCreate extends StatefulWidget {
 class _CardCreateState extends State<CardCreate> {
   int? _selectedDay;
   int? _selectedMonth;
+  String? email;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
   // final TextEditingController _userController = TextEditingController();
   final TextEditingController _minProstController = TextEditingController();
   final TextEditingController _maxProstController = TextEditingController();
+
+  
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
+    User? user = _auth.currentUser;
+    email = user?.email;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black,
@@ -331,11 +340,13 @@ class _CardCreateState extends State<CardCreate> {
                                   _minProstController.text,
                                   _maxProstController.text,
                                   _selectedDay!,
-                                  _selectedMonth!);
+                                  _selectedMonth!,
+                                  email!
+                                  );
 
                               Navigator.pop(context);
 
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const HomePage(),

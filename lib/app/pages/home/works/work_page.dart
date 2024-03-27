@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:app_freelancer/app/pages/home/works/create_of_cards/create_of_cards_page.dart';
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +26,10 @@ class _WorksState extends State<Works> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Trabalhos'),
+        title: const Text('Trabalhos', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.black,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _jobsFuture,
@@ -40,10 +44,12 @@ class _WorksState extends State<Works> {
               itemCount: jobs.length,
               itemBuilder: (context, index) {
                 return Card(
+                  color: Color.fromARGB(255, 95, 95, 95),
                   child: ListTile(
                     title: Text(
                       jobs[index]['title'] ?? 'Sem título',
                       style: TextStyle(
+                        color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -56,7 +62,7 @@ class _WorksState extends State<Works> {
                           jobs[index]['desc'] ?? 'Sem descrição',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(height: 5),
@@ -64,7 +70,7 @@ class _WorksState extends State<Works> {
                           "Prazo: ${jobs[index]['selectedDay']}/${jobs[index]['selectedMonth']}",
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(height: 5),
@@ -72,7 +78,7 @@ class _WorksState extends State<Works> {
                           "Proposta Mínima: ${jobs[index]['propostMin']} ~ Proposta Máxima: ${jobs[index]['propostMax']}",
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: Colors.black,
                           ),
                         ),
                       ],

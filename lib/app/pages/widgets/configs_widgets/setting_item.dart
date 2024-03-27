@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class SettingItem extends StatelessWidget {
   final String title;
+  final Color colorTitle;
   final Color bgColor;
   final Color iconColor;
   final IconData icon;
@@ -15,7 +16,7 @@ class SettingItem extends StatelessWidget {
     required this.iconColor,
     required this.icon,
     required this.onTap,
-    this.value,
+    this.value, required this.colorTitle,
   });
 
   @override
@@ -41,7 +42,7 @@ class SettingItem extends StatelessWidget {
           ),
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style:  TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: colorTitle),
           ),
           const Spacer(),
           value != null

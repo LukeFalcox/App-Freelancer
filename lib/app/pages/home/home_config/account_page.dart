@@ -21,18 +21,13 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ));
-          },
-          icon: const Icon(Ionicons.chevron_back_outline),
-        ),
-        leadingWidth: 80,
+        backgroundColor: Colors.black,
+        title: const Text(
+                "Settings",
+               style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+        )
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -40,22 +35,12 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Settings",
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 40),
+              
               const Text(
                 "Account",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
                 child: Row(
@@ -65,31 +50,26 @@ class _AccountScreenState extends State<AccountScreen> {
                       children: [
                         Text(
                           _auth.currentUser!.email ?? 'Email não disponível',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          "Developer",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                          "Developer", //Criar um documento de descrição no banco de dados
+                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
                     const Spacer(),
-                    ForwardButton(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const EditAccountScreen(),
-                          ),
-                        );
-                      },
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: IconButton(onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AboutAccount(),
+                            ),
+                          );
+                        }, icon: Icon(Icons.person_2_rounded),color: Colors.white,hoverColor: Colors.green,iconSize: 32,),
                     )
                   ],
                 ),
@@ -97,14 +77,12 @@ class _AccountScreenState extends State<AccountScreen> {
               const SizedBox(height: 40),
               const Text(
                 "Settings",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               SettingItem(
                 title: "Language",
+                colorTitle: Colors.white,
                 icon: Ionicons.earth,
                 bgColor: Colors.orange.shade100,
                 iconColor: Colors.orange,
@@ -114,6 +92,7 @@ class _AccountScreenState extends State<AccountScreen> {
               const SizedBox(height: 20),
               SettingItem(
                 title: "Notifications",
+                colorTitle: Colors.white,
                 icon: Ionicons.notifications,
                 bgColor: Colors.blue.shade100,
                 iconColor: Colors.blue,
@@ -122,6 +101,7 @@ class _AccountScreenState extends State<AccountScreen> {
               const SizedBox(height: 20),
               SettingItem(
                 title: "Help",
+                colorTitle: Colors.white,
                 icon: Ionicons.nuclear,
                 bgColor: Colors.red.shade100,
                 iconColor: Colors.red,

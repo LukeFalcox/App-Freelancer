@@ -25,6 +25,8 @@ dependencies:
   provider: ^6.1.2
   ionicons: ^0.2.2
   routefly: ^1.0.9
+  fl_chart: ^0.66.2
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
