@@ -145,14 +145,14 @@ class _RegisterState extends State<Register> {
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please, insert your email.';
+                    return 'Please, insert your username.';
                   }
                   if (value.length < 9) {
-                    return "This e-mail is very short";
+                    return "This username is very short";
                   }
 
                   if (!value.contains('@')) {
-                    return "This e-mail isn't valid";
+                    return "This username isn't valid";
                   }
                   // Adicione outras validações aqui, se necessário
                   return null;
@@ -234,6 +234,7 @@ class _RegisterState extends State<Register> {
               child: TextFormField(
                 style: const TextStyle(color: Colors.white),
                 controller: _confirmpasswordController,
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Confirm password',
                   hintText: 'password_example',

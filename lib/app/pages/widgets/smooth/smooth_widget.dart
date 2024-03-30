@@ -16,26 +16,21 @@ class _SmoothState extends State<Smooth> {
   final _controller = PageController();
   int _currentPage = 0;
 
-  @override
-  void initState() {
-    super.initState();
-if (_controller.hasClients) {
-    Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (_currentPage != 4) {
-        _currentPage++;
-      }
-      if (_currentPage == 4) {
-        _controller.jumpToPage(
-          0,
-        );
-        _currentPage = 0;
-      } else {
-        _controller.animateToPage(_currentPage,
-            duration: const Duration(milliseconds: 500), curve: Curves.ease);
-      }
-    });
-  }
-  }
+@override
+void initState() {
+  super.initState();
+  Timer.periodic(const Duration(seconds: 2), (timer) {
+    if (_currentPage != 4) {
+      _currentPage++;
+      _controller.animateToPage(_currentPage,
+          duration: const Duration(milliseconds: 500), curve: Curves.ease);
+    } else {
+      _controller.jumpToPage(0);
+      _currentPage = 0;
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {

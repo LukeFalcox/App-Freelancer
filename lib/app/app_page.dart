@@ -10,6 +10,6 @@ class MyApp extends StatelessWidget {
     return  const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'CyberFreenlancer',
-        home: Profile());
+        home: CheckAuthStatePage());
   }
   }
