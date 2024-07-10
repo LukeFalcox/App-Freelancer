@@ -32,44 +32,53 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: const Color(0xFF000000),
-      body: PageView(
-        controller: pageCont,
-        onPageChanged: setCurrentPage,
-        children: [
-          Works(
-            authService: AuthService(),
-          ),
-          const HomePageChat(),
-          const Profile(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromARGB(215, 0, 0, 0),
-        currentIndex: currentPage,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work, color: Color.fromARGB(255, 114, 0, 152)),
-            label: 'Works',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble,
-                color: Color.fromARGB(255, 156, 11, 204)),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.settings,
-              color: Color.fromARGB(255, 156, 11, 204),
+    return Container(
+      decoration: const BoxDecoration(
+  image: DecorationImage(
+    image: AssetImage("images/back.jpg"),
+    fit: BoxFit.cover,
+  ),
+),
+      child: Scaffold(
+        // backgroundColor: const Color(0xFF000000),
+        body: PageView(
+
+          controller: pageCont,
+          onPageChanged: setCurrentPage,
+          children: [
+             const Profile(),
+            const HomePageChat(),
+           Works(
+              authService: AuthService(),
             ),
-            label: 'Settings',
-          ),
-        ],
-        onTap: (page) {
-          pageCont.animateToPage(page,
-              duration: const Duration(milliseconds: 400), curve: Curves.ease);
-        },
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Color.fromARGB(215, 0, 0, 0),
+          currentIndex: currentPage,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people, color: Color.fromARGB(255, 114, 0, 152)),
+              label: 'Profile',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble,
+                  color: Color.fromARGB(255, 156, 11, 204)),
+              label: 'Chat',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.work,
+                color: Color.fromARGB(255, 156, 11, 204),
+              ),
+              label: 'Settings',
+            ),
+          ],
+          onTap: (page) {
+            pageCont.animateToPage(page,
+                duration: const Duration(milliseconds: 400), curve: Curves.ease);
+          },
+        ),
       ),
     );
   }

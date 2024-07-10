@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, avoid_print
+// ignore_for_file: file_names, avoid_print, non_constant_identifier_names
 
 import 'package:app_freelancer/app/pages/home/home_chat/chat/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,17 +9,16 @@ class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<UserCredential> registerUsers(String username,String email, String password) async {
+  Future<UserCredential> register_users( String email, String password) async {
     try {
       await FirebaseAuth.instance.setLanguageCode('en_US');
       UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: password);
+          .createUserWithEmailAndPassword(email: email, password: password,);
 
       _firestore.collection('users').doc(userCredential.user!.uid).set(
         {
           'uid': userCredential.user!.uid,
           'email': email,
-          'username': username
         },
       );
       return userCredential;
@@ -28,16 +27,25 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  void register_complementos (String username, String cep,String phone,UserCredential userCredential){
+      try {
+        _firestore.collection('users').doc(userCredential.user!.uid).set(
+            {
+          'username': username,
+          'cep': cep,
+          'phone': phone,
+  
+          },
+        );
+      } catch (e) {
+        
+      }
+  }
+
   Future<UserCredential> login(String email, password) async {
     try {
       UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
-
-      // after creating the user, create a new document for the user in
-      _firestore.collection('users').doc(userCredential.user!.uid).set({
-        'uid': userCredential.user!.uid,
-        'email': email,
-      });
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -49,7 +57,7 @@ class AuthService extends ChangeNotifier {
     await FirebaseAuth.instance.signOut();
   }
 
-  void registerCard(String title, String desc, String propostMin, String propostMax,
+  void register_card(String title, String desc, String propostMin, String propostMax,
       int selectedDay, int selectedMonth, String email) async {
     try {
       final infocard = <String, dynamic>{
@@ -59,7 +67,7 @@ class AuthService extends ChangeNotifier {
         "propostMax": propostMax,
         "selectedDay": selectedDay,
         "selectedMonth": selectedMonth,
-        "user": email
+        "uid": email
       };
 
       await _firestore.collection('cards').doc().set(infocard);
@@ -68,7 +76,41 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-Future<List<Map<String, dynamic>>> getData() async {
+  void register_friends(valuidfreelancer, valuidclient) async {
+  try {
+    QuerySnapshot querySnapshot = await _firestore.collection('friends').get();
+
+    bool areFriends = false;
+
+    // Iterar sobre todos os documentos da coleção
+    for (DocumentSnapshot snapshot in querySnapshot.docs) {
+      Map<String, dynamic> friendsData = snapshot.data() as Map<String, dynamic>;
+      var uidfreelancer = friendsData['uidfreelancer'];
+      var uidclient = friendsData['uidclient'];
+
+      // Verificar se o par já é amigo
+      if (uidfreelancer == valuidfreelancer && uidclient == valuidclient) {
+        areFriends = true;
+        break;
+      }
+    }
+
+    if (!areFriends) {
+      // Adicionar como amigos se não forem amigos
+      await _firestore.collection('friends').add({
+        'uidfreelancer': valuidfreelancer,
+        'uidclient': valuidclient,
+      });
+      print('Adicionado como amigos.');
+    } else {
+      print('Já são amigos.');
+    }
+  } catch (e) {
+    print('Erro ao verificar amigos: $e');
+  }
+}
+
+Future<List<Map<String, dynamic>>> get_data() async {
   QuerySnapshot<Map<String, dynamic>> snapshot =
       await _firestore.collection('cards').get();
 

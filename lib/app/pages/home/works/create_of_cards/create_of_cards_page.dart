@@ -17,7 +17,7 @@ class CardCreate extends StatefulWidget {
 class _CardCreateState extends State<CardCreate> {
   int? _selectedDay;
   int? _selectedMonth;
-  String? email;
+  String? uid;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
   // final TextEditingController _userController = TextEditingController();
@@ -30,7 +30,7 @@ class _CardCreateState extends State<CardCreate> {
     final FirebaseAuth _auth = FirebaseAuth.instance;
 
     User? user = _auth.currentUser;
-    email = user?.email;
+    uid = user?.uid;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black,
@@ -334,14 +334,14 @@ class _CardCreateState extends State<CardCreate> {
                                 listen: false);
 
                             try {
-                              authService.registerCard(
+                              authService.register_card(
                                   _titleController.text,
                                   _descController.text,
                                   _minProstController.text,
                                   _maxProstController.text,
                                   _selectedDay!,
                                   _selectedMonth!,
-                                  email!
+                                  uid!
                                   );
 
                               Navigator.pop(context);

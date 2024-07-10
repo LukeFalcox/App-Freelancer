@@ -5,17 +5,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 class HomePageChat extends StatefulWidget {
-  const HomePageChat({super.key});
+  const HomePageChat({Key? key}) : super(key: key);
 
   @override
   State<HomePageChat> createState() => _HomePageChatState();
 }
 
 class _HomePageChatState extends State<HomePageChat> {
-  // instance of auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Set<String> _addedUsers = {}; // Conjunto de uid dos usuários já adicionados
 
   void signOut() {
     final authService = Provider.of<AuthService>(context, listen: false);
@@ -23,16 +22,16 @@ class _HomePageChatState extends State<HomePageChat> {
     authService.singOut();
 
     Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const StartScreenPage(),
-        ));
+      context,
+      MaterialPageRoute(
+        builder: (context) => const StartScreenPage(),
+      ),
+    );
   }
 
   @override
   void initState() {
     super.initState();
-    
   }
 
   @override
@@ -41,45 +40,100 @@ class _HomePageChatState extends State<HomePageChat> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text('Chats',style: TextStyle(color:  Colors.white),),
-        actions: [
-          IconButton(onPressed: signOut, icon: const Icon(Icons.logout, color: Colors.white,))
-        ],
+        title: const Text(
+          'Chats',
+          style: TextStyle(color: Colors.white),
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: _buildUserList(),
     );
   }
 
   Widget _buildUserList() {
-  return StreamBuilder<QuerySnapshot>(
-    stream: FirebaseFirestore.instance.collection('users').snapshots(),
-    builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return const Text('error');
-      }
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('friends').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Text('error');
+        }
 
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Text('loading..');
-      }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Text('loading..');
+        }
 
-      if (snapshot.data == null) {
-        return const Text('No data');
-      }
+        if (snapshot.data == null) {
+          return const Text('No data');
+        }
 
-      return ListView(
-        children: snapshot.data!.docs
-            .map<Widget>((doc) => _buildUserListItem(doc))
-            .toList(),
-      );
-    },
-  );
-}
+        return ListView(
+          children: snapshot.data!.docs
+              .map<Widget>((doc) => _buildUserListItem(doc))
+              .toList(),
+        );
+      },
+    );
+  }
 
   Widget _buildUserListItem(DocumentSnapshot document) {
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
 
-    if (_auth.currentUser!.email != data['email']) {
-      return Column(
+    // Verificar se o uid do cliente não está repetido
+    if (!_addedUsers.contains(data['uidclient']) &&
+        _auth.currentUser!.uid != data['uidclient']) {
+      _addedUsers.add(data['uidclient']); // Adicionar uid à lista de usuários adicionados
+
+      return FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance.collection('users').doc(data['uidclient']).get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+
+          if (snapshot.hasError) {
+            return Text('Erro ao carregar usuário');
+          }
+
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return Text('Usuário não encontrado');
+          }
+
+          Map<String, dynamic> userData = snapshot.data!.data()! as Map<String, dynamic>;
+
+          return Column(
+            children: [
+              ListTile(
+                title: Text(
+                  userData['username'],
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                        receiverUserID: data['uidclient'],
+                      ),
+                    ),
+                  );
+                },
+              ),
+              Divider()
+            ],
+          );
+        },
+      );
+    } else {
+      return Container(); // Retornar um container vazio para usuários repetidos
+    }
+  }
+}
+
+
+
+/*
+
+ return Column(
         children: [
           ListTile(
             title: Text(
@@ -91,7 +145,6 @@ class _HomePageChatState extends State<HomePageChat> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ChatPage(
-                            userEmail: data['email'],
                             receiverUserID: data['uid'],
                           )));
             },
@@ -99,8 +152,5 @@ class _HomePageChatState extends State<HomePageChat> {
           Divider()
         ],
       );
-    } else {
-      return Container();
-    }
-  }
-}
+
+*/

@@ -1,6 +1,10 @@
+import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:app_freelancer/app/pages/home/start_screen_page/start_screen_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -13,7 +17,22 @@ class _ProfileState extends State<Profile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
-  final CollectionReference _friendsCollections = FirebaseFirestore.instance.collection('friends');
+  final CollectionReference _friendsCollections =
+      FirebaseFirestore.instance.collection('friends');
+
+
+  void signOut() {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    authService.singOut();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const StartScreenPage(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +68,22 @@ class _ProfileState extends State<Profile> {
               const SizedBox(
                 height: 30,
               ),
-              const Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
+               Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Row(children: [
+                  Text(
                     'ABOUT ACCOUNT',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 32),
                   ),
-                ),
+                  IconButton(
+                      onPressed: () {
+                        signOut();
+                      },
+                      icon: Icon(Ionicons.arrow_back_circle))
+                ]),
               ),
               Align(
                 alignment: Alignment.centerLeft,
@@ -82,13 +105,13 @@ class _ProfileState extends State<Profile> {
                           children: [
                             Text(
                               '${userData['username']}',
-                              style:
-                                  const TextStyle(color: Colors.white, fontSize: 24),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 24),
                             ),
                             Text(
                               '${userData['email']}',
-                              style:
-                                  const TextStyle(color: Colors.white, fontSize: 24),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 24),
                             ),
                           ]),
                     ],
@@ -106,32 +129,31 @@ class _ProfileState extends State<Profile> {
                     fontWeight: FontWeight.bold),
               ),
               Container(
-              padding: const EdgeInsets.all(20),
-              height: 600,
-              width: 800,
-              color: Colors.transparent,
-              child: Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40.0),
-                        topRight: Radius.circular(40.0),
-                        bottomLeft: Radius.circular(40.0),
-                        bottomRight: Radius.circular(40.0),
-                      )),
-                  child:  Column(
-                    children: <Widget>[
-                    
-                    ],
-                  )),
-            )
+                padding: const EdgeInsets.all(20),
+                height: 600,
+                width: 800,
+                color: Colors.transparent,
+                child: Container(
+                    decoration: const BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40.0),
+                          topRight: Radius.circular(40.0),
+                          bottomLeft: Radius.circular(40.0),
+                          bottomRight: Radius.circular(40.0),
+                        )),
+                    child: Column(
+                      children: <Widget>[],
+                    )),
+              )
             ],
           ),
         );
       },
     );
   }
-  Widget buildListFriends(){
+
+  Widget buildListFriends() {
     return StreamBuilder<DocumentSnapshot>(
       stream: _friendsCollections.doc().snapshots(),
       builder: (context, snapshot) {
@@ -147,12 +169,10 @@ class _ProfileState extends State<Profile> {
           return const Text('No data');
         }
 
-        Map<String,dynamic> friendData = snapshot.data!.data() as Map<String, dynamic>;
-       return ListView(
-        
-       );
+        Map<String, dynamic> friendData =
+            snapshot.data!.data() as Map<String, dynamic>;
+        return ListView();
       },
     );
   }
-  
 }

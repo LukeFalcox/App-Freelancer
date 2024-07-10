@@ -13,23 +13,31 @@ class Smooth extends StatefulWidget {
 }
 
 class _SmoothState extends State<Smooth> {
-  final _controller = PageController();
-  int _currentPage = 0;
+  late final PageController _controller;
+  late int _currentPage;
+  late Timer _timer;
 
-@override
-void initState() {
-  super.initState();
-  Timer.periodic(const Duration(seconds: 2), (timer) {
-    if (_currentPage != 4) {
-      _currentPage++;
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController();
+    _currentPage = 0;
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_currentPage != 3) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
       _controller.animateToPage(_currentPage,
           duration: const Duration(milliseconds: 500), curve: Curves.ease);
-    } else {
-      _controller.jumpToPage(0);
-      _currentPage = 0;
-    }
-  });
-}
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Cancela o Timer quando o State é descartado
+    super.dispose();
+  }
 
 
   @override

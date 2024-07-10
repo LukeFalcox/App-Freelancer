@@ -5,10 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
-  final String userEmail;
   final String receiverUserID;
   const ChatPage(
-      {super.key, required this.userEmail, required this.receiverUserID});
+      {super.key, required this.receiverUserID});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -38,11 +37,6 @@ class _ChatPageState extends State<ChatPage> {
           color: Colors.white, // Defina a cor desejada aqui
         ),
         backgroundColor: const Color(0xDF000000),
-        title: Text(
-          widget.userEmail,
-          style: const TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-        ),
       ),
       body: Column(children: [
         //messages

@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_import, file_names
 
-import 'package:app_freelancer/app/pages/home/home_page.dart';
+import 'package:app_freelancer/app/pages/choices/choice_profissional.dart';
 import 'package:app_freelancer/app/pages/home/start_screen_page/start_screen_page.dart';
 import 'package:app_freelancer/app/pages/home/start_screen_page/sign/login_page.dart';
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,8 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmpasswordController =
       TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
+  late final UserCredential userCredential;
+ 
   double opacity = 0.0;
 
   sigUp() async {
@@ -33,8 +35,8 @@ class _RegisterState extends State<Register> {
     final authService = Provider.of<AuthService>(context, listen: false);
 
     try {
-      authService.registerUsers(_usernameController.text, _emailController.text,
-          _passwordController.text);
+    userCredential = await authService.register_users(
+          _emailController.text, _passwordController.text);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -120,44 +122,6 @@ class _RegisterState extends State<Register> {
                   ),
                 )
               ],
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
-              child: TextFormField(
-                style: const TextStyle(color: Colors.white),
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  labelText: 'User Name',
-                  hintText: 'ExampleName',
-                  labelStyle: TextStyle(color: Colors.white),
-                  hintStyle: TextStyle(color: Color.fromARGB(255, 27, 27, 27)),
-                  focusColor: Colors.blue,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 3, color: Color(0xFF5F16B8)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 3, color: Color(0xFF1B93F5)),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 3, color: Color(0xFFF73123)),
-                  ),
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please, insert your username.';
-                  }
-                  if (value.length < 9) {
-                    return "This username is very short";
-                  }
-
-                  if (!value.contains('@')) {
-                    return "This username isn't valid";
-                  }
-                  // Adicione outras validações aqui, se necessário
-                  return null;
-                },
-              ),
             ),
             Padding(
               padding:
@@ -291,12 +255,7 @@ class _RegisterState extends State<Register> {
 
                         Navigator.pop(context);
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomePage(),
-                          ),
-                        );
+                        await _waitForAuthentication(context);
                       } catch (error) {
                         Navigator.pop(context);
 
@@ -335,6 +294,17 @@ class _RegisterState extends State<Register> {
             ])
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _waitForAuthentication(BuildContext context) async {
+    await Future.delayed(
+        Duration(seconds: 3)); // Simulando um atraso para a autenticação
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>  ChoiceProfissional(userCredential:userCredential),
       ),
     );
   }
