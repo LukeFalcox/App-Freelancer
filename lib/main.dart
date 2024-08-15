@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:zero/TeladeCards.dart';
+import 'TeladePerfil.dart';
 
 void main() {   
-  runApp(const MyApp());
+  runApp(const ProfileScreen());
 }
