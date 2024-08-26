@@ -1,7 +1,10 @@
-import 'package:app_freelancer/app/pages/home/home_page.dart';
-import 'package:app_freelancer/app/pages/home/start_screen_page/sign/login_page.dart';
-import 'package:flutter/material.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_page.dart';
+import 'package:app_freelancer/app/pages/homeprincip.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+
+
 
 class CheckAuthState extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -11,6 +14,7 @@ class CheckAuthState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: _auth.authStateChanges().first,
         builder: (context, AsyncSnapshot<User?> snapshot) {
@@ -23,7 +27,7 @@ class CheckAuthState extends StatelessWidget {
               return const HomePage();
             } else {
               // Caso contrário, vá para a tela de login
-              return const PageLogin();
+              return const HomePrincip();
             }
           }
         },

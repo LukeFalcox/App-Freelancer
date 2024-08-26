@@ -24,7 +24,7 @@ dependencies:
   fl_chart: ^0.66.2
   image_picker: ^1.0.7
   file_picker: ^8.0.0+1
-  firebase_storage: ^11.6.11
+  firebase_storage: ^11.7.7
 
 dev_dependencies:
   flutter_test:
@@ -38,7 +38,7 @@ flutter:
 
 
   assets:
-    - assets/img/
+    - image/img/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

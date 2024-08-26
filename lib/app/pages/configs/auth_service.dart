@@ -1,15 +1,17 @@
 // ignore_for_file: file_names, avoid_print, non_constant_identifier_names
 
-import 'package:app_freelancer/app/pages/home/home_chat/chat/message.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_chat/chat/message.dart';
+import 'package:app_freelancer/app/pages/homeprincip.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<UserCredential> register_users( String email, String password) async {
+  Future<UserCredential> register_users( String email, String password, String name, String cell) async {
     try {
       await FirebaseAuth.instance.setLanguageCode('en_US');
       UserCredential userCredential = await _firebaseAuth
@@ -19,11 +21,26 @@ class AuthService extends ChangeNotifier {
         {
           'uid': userCredential.user!.uid,
           'email': email,
+          'name': name,
+          'cell': cell,
         },
       );
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
+    }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const HomePrincip()),
+        (route) => false,
+      );
+    } catch (e) {
+      print('Error signing out: $e');
+      // Você pode exibir uma mensagem de erro aqui, se desejar
     }
   }
 
@@ -37,9 +54,9 @@ class AuthService extends ChangeNotifier {
   
           },
         );
-      } catch (e) {
-        
-      }
+      }  on FirebaseAuthException catch (e) {
+      throw Exception(e.code);
+    }
   }
 
   Future<UserCredential> login(String email, password) async {
@@ -53,24 +70,24 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  void logout() async {
-    await FirebaseAuth.instance.signOut();
-  }
 
-  void register_card(String title, String desc, String propostMin, String propostMax,
-      int selectedDay, int selectedMonth, String email) async {
-    try {
-      final infocard = <String, dynamic>{
-        'title': title,
-        'desc': desc,
-        "propostMin": propostMin,
-        "propostMax": propostMax,
-        "selectedDay": selectedDay,
-        "selectedMonth": selectedMonth,
-        "uid": email
-      };
 
-      await _firestore.collection('cards').doc().set(infocard);
+  void register_card(String title, String desc, String propostMin, String propostMax, DateTime? selectedDate, String uid) async {
+  try {
+    final String formattedDate = selectedDate != null
+        ? "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}"
+        : '';
+    
+    final infocard = <String, dynamic>{
+      'titulo': title,
+      'desc': desc,
+      'minima': propostMin,
+      'maxima': propostMax,
+      'prazo': formattedDate, // Aqui o DateTime é armazenado como String
+      'uid': uid
+    };
+
+      await _firestore.collection('jobs').doc().set(infocard);
     } catch (e) {
       print('Error creating card: $e');
     }
@@ -110,6 +127,21 @@ class AuthService extends ChangeNotifier {
   }
 }
 
+Future<String?> getName(String uid) async {
+    
+  QuerySnapshot<Map<String, dynamic>> nome = await _firestore
+      .collection('users')
+      .where('uid', isEqualTo: uid)
+      .get();
+  if (nome.docs.isNotEmpty) {
+    return nome.docs.first.data()['nome'] as String?;
+  } else {
+    return "Nenhum nome registrado";
+  }
+}
+
+
+
 Future<List<Map<String, dynamic>>> get_data() async {
   QuerySnapshot<Map<String, dynamic>> snapshot =
       await _firestore.collection('cards').get();
@@ -124,8 +156,8 @@ Future<List<Map<String, dynamic>>> get_data() async {
     return await FirebaseAuth.instance.signOut();
   }
 
-  Future<void> sendMessage(String receiverId, String message) async {
-    //get current user info
+  Future<void> sendMessage(String receiverId, String message, String formattedTime) async {
+    // get current user info
     final String currentUserId = _firebaseAuth.currentUser!.uid;
     final String currentUserEmail = _firebaseAuth.currentUser!.email.toString();
     final Timestamp timestamp = Timestamp.now();
@@ -136,6 +168,7 @@ Future<List<Map<String, dynamic>>> get_data() async {
       receiverId: receiverId,
       message: message,
       timestamp: timestamp,
+      formattedTime: formattedTime, // Add this field
     );
 
     List<String> ids = [currentUserId, receiverId];
@@ -163,4 +196,43 @@ Future<List<Map<String, dynamic>>> get_data() async {
         .orderBy('timestamp', descending: false)
         .snapshots();
   }
+
+   void register_info(
+  String name,
+  String skills,
+  String projects,
+  String exp,
+  String taxa,
+  dynamic dynamicImage, 
+  dynamic uid 
+) async {
+  try {
+    // Upload da imagem para o Firebase Storage
+    String fileName = 'profile_images/${DateTime.now().millisecondsSinceEpoch}.png';
+    Reference storageRef = FirebaseStorage.instance.ref().child(fileName);
+    UploadTask uploadTask = storageRef.putFile(dynamicImage);
+    TaskSnapshot snapshot = await uploadTask;
+    String imageUrl = await snapshot.ref.getDownloadURL();
+
+    // Criação do objeto infocard com a URL da imagem
+    final infocard = <String, dynamic>{
+      'name': name,
+      'skills': skills,
+      'projects': projects,
+      'exp': exp,
+      'taxa': taxa,
+      'imageUrl': imageUrl, // Adiciona a URL da imagem ao objeto infocard
+    };
+
+    // Armazenando o infocard no Firestore
+    await FirebaseFirestore.instance
+  .collection('users')
+  .doc(uid) // Use o UID como o ID do documento
+  .update(infocard);
+    print('Card criado com sucesso!');
+  } catch (e) {
+    print('Erro ao criar card: $e');
+  }
+}
+  
 }
