@@ -48,18 +48,24 @@ class _PageLoginState extends State<PageLogin> {
               const Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       "Login",
-                      style: TextStyle(color: Colors.white, fontSize: 40),
+                      style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: 10,
                     ),
                     Text(
                       "Seja Bem Vindo",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
@@ -98,9 +104,10 @@ class _PageLoginState extends State<PageLogin> {
                                     border: Border(
                                         bottom: BorderSide(
                                             color: Colors.grey.shade200))),
-                                child: const TextField(
-                                  decoration: InputDecoration(
-                                      hintText: "Email or Phone Number",
+                                child:  TextField(
+                                  controller: _emailController,
+                                  decoration: const InputDecoration(
+                                      hintText: "Email",
                                       hintStyle: TextStyle(color: Colors.grey),
                                       border: InputBorder.none),
                                 )),
@@ -110,9 +117,10 @@ class _PageLoginState extends State<PageLogin> {
                                   border: Border(
                                       bottom: BorderSide(
                                           color: Colors.grey.shade200))),
-                              child: const TextField(
+                              child:  TextField(
+                                 controller: _passwordController,
                                 obscureText: true,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     hintText: "Senha",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none),
@@ -137,8 +145,8 @@ class _PageLoginState extends State<PageLogin> {
                       });
 
                       try {
-                        UserCredential? userCredential = await authService
-                            .login(_emailController.text, _passwordController.text);
+                        UserCredential? userCredential = await authService.login(_emailController.text, _passwordController.text);
+                            
 
                         if (userCredential.user != null) {
                           Navigator.pushReplacement(

@@ -1,5 +1,3 @@
-// ignore_for_file: file_names
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 class Message {
   final String senderId;
@@ -8,6 +6,7 @@ class Message {
   final String message;
   final Timestamp timestamp;
   final String formattedTime;
+  final String type;
 
   Message({
     required this.senderId,
@@ -16,6 +15,7 @@ class Message {
     required this.message,
     required this.timestamp,
     required this.formattedTime,
+    required this.type,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +26,7 @@ class Message {
       'message': message,
       'timestamp': timestamp,
       'formattedTime': formattedTime,
+      'type':type,
     };
   }
 }

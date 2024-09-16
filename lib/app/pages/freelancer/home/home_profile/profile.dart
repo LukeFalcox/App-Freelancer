@@ -1,13 +1,17 @@
-import 'dart:io';
-import 'package:app_freelancer/app/pages/freelancer/home/home_profile/changeProfile.dart';
-import 'package:app_freelancer/app/pages/freelancer/home/start_screen_page/sign/login_page.dart';
-import 'package:app_freelancer/app/pages/freelancer/home/start_screen_page/sign/register_page.dart';
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_profile/editprofile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:ionicons/ionicons.dart';
+import 'dart:html' as html;
 import 'package:provider/provider.dart';
-// Certifique-se de que o caminho da importação está correto
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:async';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,197 +21,281 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late String name;
+  Map<String, dynamic>? infos;
+  late AuthService authService; // Declare AuthService variable
+  late FirebaseAuth _auth;
+  late User? user;
+  String? _profileImageUrl;
+  late String userEmail;
+  bool isLoading = true; // Adiciona uma variável para controlar o estado de carregamento
+
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   @override
-  Widget build(BuildContext context) {
-    User? user = _auth.currentUser;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Meu Perfil',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: const Color.fromARGB(255, 30, 81, 250),
-        ),
-        body: _buildProfile(user),
-      ),
-    );
+  void initState() {
+    super.initState();
   }
 
-  Widget _buildProfile(User? user) {
-    Provider.of<AuthService>(context, listen: false);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    authService = Provider.of<AuthService>(context, listen: false);
+    _auth = FirebaseAuth.instance;
+    user = _auth.currentUser;
+    userEmail = user?.email ?? '';
+    // Carrega as informações do usuário
+    _loadUserInfos();
+  }
 
-    File? imageFile;
-
-
-    if (user != null) {
-  return StreamBuilder<QuerySnapshot>(
-    stream: FirebaseFirestore.instance.collection('users').snapshots(),
-    builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return const Text('Error');
+  Future<void> _loadUserInfos() async {
+    try {
+      infos = await authService.getinfos(userEmail);
+      if (infos != null && infos!.isNotEmpty) {
+        name = infos!['nome'] ?? "";
+        // Optionally, you might want to load the profile image URL here
+        // Example: _profileImageUrl = await authService.getProfileImageUrl(userEmail);
       }
+    } catch (e) {
+      print("Erro ao carregar informações do usuário: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // Define como false após o carregamento
+      });
+    }
+  }
 
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Text('Loading...');
+  Future<String?> pickAndUploadImageMobile(String userEmail) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? file = await _picker.pickImage(source: ImageSource.gallery);
+    if (file != null) {
+      final File fileObj = File(file.path);
+      try {
+        final Uint8List fileBytes = await fileObj.readAsBytes();
+        final ref = FirebaseStorage.instance.ref().child('images/$userEmail/Usuario/Perfil.jpg');
+        final uploadTask = ref.putData(fileBytes);
+        await uploadTask.whenComplete(() => null);
+        return await ref.getDownloadURL();
+      } catch (e) {
+        print("Erro no upload: $e");
+        return null;
       }
+    }
+    return null;
+  }
 
-      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-        return const Text('No data');
+  Future<String?> pickAndUploadImageWeb(String userEmail) async {
+    final uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = 'image/*';
+    uploadInput.click();
+
+    final Completer<String?> completer = Completer<String?>();
+    uploadInput.onChange.listen((e) async {
+      final files = uploadInput.files;
+      if (files != null && files.isNotEmpty) {
+        final file = files[0];
+        final reader = html.FileReader();
+        reader.readAsArrayBuffer(file);
+
+        reader.onLoadEnd.listen((_) async {
+          final Uint8List fileBytes = reader.result as Uint8List;
+          final ref = FirebaseStorage.instance.ref().child('images/$userEmail/Usuario/Perfil.jpg');
+          try {
+            final uploadTask = ref.putData(fileBytes);
+            await uploadTask.whenComplete(() => null);
+            final imageUrl = await ref.getDownloadURL();
+            completer.complete(imageUrl);
+          } catch (e) {
+            print("Erro no upload: $e");
+            completer.complete(null);
+          }
+        });
+
+        reader.onError.listen((e) {
+          print("Erro no upload: $e");
+          completer.complete(null);
+        });
+      } else {
+        completer.complete(null);
       }
+    });
 
-      final doc = snapshot.data!.docs.first;
-      Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
+    return completer.future;
+  }
 
-      if (data == null) {
-        return const Text('Unexpected null value');
-      }
+  Future<void> pickAndUploadImage(String userEmail) async {
+    String? imageUrl;
+    if (kIsWeb) {
+      imageUrl = await pickAndUploadImageWeb(userEmail);
+    } else {
+      imageUrl = await pickAndUploadImageMobile(userEmail);
+    }
 
-      final String name = data['nome'] ?? 'Sem Nome';
-      final String email = data['email'] ?? 'Sem Email';
-      final String summary = data['summarry'] ?? 'Nenhuma Habilidade Informada';
-      final String projects = data['projects'] ?? 'Nenhum Projeto Informado';
-      final String skills = data['skills'] ?? 'Nenhuma Experiência Informada';
-      final String rating = data['rating'] ?? 'Nenhuma Avaliação';
-      final String taxa = data['taxa'] ?? 'Nenhuma Taxa Informada';
+    if (imageUrl != null) {
+      setState(() {
+        _profileImageUrl = imageUrl;
+      });
+    }
+  }
 
-      return SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(25.0),
-                  bottomRight: Radius.circular(25.0),
-                ),
-              ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: (){},
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: imageFile != null
-                          ? FileImage(imageFile)
-                          : null,
-                      backgroundColor: Colors.grey, // Não use imagem se _imageFile for nulo
-                      child: imageFile == null
-                          ? const Icon(
-                              Icons.person, // Ícone padrão de usuário
-                              size: 50,
-                              color: Colors.white,
-                            )
-                          : null, // Cor de fundo caso não haja imagem
+  @override
+  Widget build(BuildContext context) {
+    var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          "Perfil",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(isDark ? Ionicons.sunny : Ionicons.moon),
+          ),
+        ],
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator()) // Exibe o indicador de progresso enquanto carrega
+          : SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () => pickAndUploadImage(userEmail),
+                      child: SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: _profileImageUrl != null
+                              ? Image.network(_profileImageUrl!)
+                              : const Image(
+                                  image: AssetImage("image/img/hacker.png"),
+                                ),
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      infoSessao('Nome', name),
-                      infoSessao('Email', email),
-                      infoSessao('Habilidades', summary),
-                      infoSessao('Projetos Realizados', projects),
-                      infoSessao('Experiencia', skills),
-                      infoSessao('Avaliação', rating),
-                      infoSessao('Taxa', taxa),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
+                    const SizedBox(height: 10),
+                    Text(
+                      name,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    Text(
+                      userEmail,
+                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 16),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: 200,
+                      child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ChangeProfileScreen()),
+                              builder: (context) => Editprofile(),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          textStyle: const TextStyle(fontSize: 16),
+                          backgroundColor: Colors.blue,
+                          side: BorderSide.none,
+                          shape: const StadiumBorder(),
                         ),
                         child: const Text(
-                          'Alterar informações',
-                          style: TextStyle(color: Colors.black),
+                          "Edit Profile",
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black),
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 30),
+                    const Divider(),
+                    const SizedBox(height: 10),
+                    ProfileMenuWidget(
+                      title: 'Configurações',
+                      onPress: () {},
+                      icon: Ionicons.cog,
+                    ),
+                    ProfileMenuWidget(
+                      title: 'Meus Projetos',
+                      onPress: () {},
+                      icon: Ionicons.paper_plane,
+                    ),
+                    ProfileMenuWidget(
+                      title: 'Ajuda',
+                      onPress: () {},
+                      icon: Ionicons.information,
+                    ),
+                    ProfileMenuWidget(
+                      title: 'Sair',
+                      onPress: () {},
+                      icon: Ionicons.backspace_outline,
+                      endIcon: false,
+                      textColor: Colors.red,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      );
-    },
-  );
-}
- else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Faça login para poder usar o app.",
-            style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 0, 0, 0)),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const PageLogin()));
-                },
-                child: const Text('Fazer Login'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Register()));
-                },
-                child: const Text('Criar Conta'),
-              ),
-            ],
-          )
-        ],
-      );
-    }
+    );
   }
+}
 
-  Widget infoSessao(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF17A2B8),
-          ),
+class ProfileMenuWidget extends StatelessWidget {
+  const ProfileMenuWidget({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.onPress,
+    this.endIcon = true,
+    this.textColor,
+  });
+
+  final String title;
+  final IconData icon;
+  final VoidCallback onPress;
+  final bool endIcon;
+  final Color? textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: onPress,
+      leading: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: Colors.blueAccent.withOpacity(0.1),
         ),
-        const SizedBox(height: 10),
-        SizedBox(
-          width: double.infinity, // Define a largura máxima disponível
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(5),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ),
+        child: Icon(
+          icon,
+          color: Colors.blue,
         ),
-        const SizedBox(height: 10),
-      ],
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)
+            .apply(color: textColor),
+      ),
+      trailing: endIcon
+          ? Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Colors.grey.withOpacity(0.1),
+              ),
+              child: const Icon(
+                Ionicons.arrow_forward,
+                color: Colors.blue,
+              ),
+            )
+          : null,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_page.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/start_screen_page/sign/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,6 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmpasswordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _cellController = TextEditingController();
   late final UserCredential userCredential;
 
   bool isLoading = false;
@@ -36,7 +36,7 @@ class _RegisterState extends State<Register> {
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       userCredential = await authService.register_users(
-          _emailController.text, _passwordController.text, _nameController.text, _cellController.text);
+          _emailController.text, _passwordController.text, _nameController.text);
 
       setState(() {
         isLoading = false;
@@ -85,23 +85,29 @@ class _RegisterState extends State<Register> {
           child: Column(
             children: <Widget>[
               const SizedBox(
-                height: 80,
+                height: 90,
               ),
               const Padding(
                 padding: EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       "Cadastro",
-                      style: TextStyle(color: Colors.white, fontSize: 40),
+                      style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     Text(
                       "Crie sua conta",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
@@ -135,38 +141,14 @@ class _RegisterState extends State<Register> {
                         child: Column(
                           children: <Widget>[
                             Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.grey.shade200))),
-                                child: const TextField(
-                                  decoration: InputDecoration(
-                                      hintText: "Nome Completo",
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none),
-                                )),
-                            Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                   border: Border(
                                       bottom: BorderSide(
                                           color: Colors.grey.shade200))),
-                              child: const TextField(
-                                decoration: InputDecoration(
-                                    hintText: "Telefone",
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    border: InputBorder.none),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          color: Colors.grey.shade200))),
-                              child: const TextField(
-                                decoration: InputDecoration(
+                              child:  TextField(
+                                controller: _emailController,
+                                decoration: const InputDecoration(
                                     hintText: "Email",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none),
@@ -178,9 +160,10 @@ class _RegisterState extends State<Register> {
                                   border: Border(
                                       bottom: BorderSide(
                                           color: Colors.grey.shade200))),
-                              child: const TextField(
+                              child:  TextField(
+                                controller: _passwordController,
                                 obscureText: true,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     hintText: "Senha",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none),
@@ -192,9 +175,10 @@ class _RegisterState extends State<Register> {
                                   border: Border(
                                       bottom: BorderSide(
                                           color: Colors.grey.shade200))),
-                              child: const TextField(
+                              child: TextField(
+                                controller: _confirmpasswordController,
                                 obscureText: true,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                     hintText: "Confirmar Senha",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none),
@@ -229,11 +213,11 @@ class _RegisterState extends State<Register> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context); // Voltar para a página de login
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const PageLogin(),));
                         },
                         child: const Text(
                           "Já tem uma conta? Faça login",
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Color(0xFF000000)),
                         ),
                       ),
                       const SizedBox(

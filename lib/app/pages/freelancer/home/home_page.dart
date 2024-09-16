@@ -1,8 +1,7 @@
 // ignore_for_file: file_names
-import 'package:app_freelancer/app/pages/freelancer/home/home_chat/home_chat_page.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_profile/profile.dart';
-import 'package:app_freelancer/app/pages/freelancer/home/works/work_page.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_chat/chat/HomePage.dart';
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -41,10 +40,7 @@ class _HomePageState extends State<HomePage> {
             authService: AuthService(),
           ),
            const ProfileScreen(),
-          const HomePageChat(),
-         Works(
-            authService: AuthService(),
-          ),
+           Homepage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -66,13 +62,13 @@ class _HomePageState extends State<HomePage> {
                 color:  Color.fromARGB(255, 30, 81, 250),),
             label: 'Chat',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.work,
-              color:  Color.fromARGB(255, 30, 81, 250),
-            ),
-            label: 'Settings',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     Icons.work,
+          //     color:  Color.fromARGB(255, 30, 81, 250),
+          //   ),
+          //   label: 'Settings',
+          // ),
         ],
         onTap: (page) {
           pageCont.animateToPage(page,
