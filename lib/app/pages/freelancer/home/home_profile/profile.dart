@@ -1,5 +1,9 @@
-import 'package:app_freelancer/app/pages/configs/auth_service.dart';
-import 'package:app_freelancer/app/pages/freelancer/home/home_profile/editprofile.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
+import 'dart:html' as html;
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,11 +11,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
-import 'dart:html' as html;
 import 'package:provider/provider.dart';
-import 'dart:io';
-import 'dart:typed_data';
-import 'dart:async';
+
+import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_profile/editprofile.dart';
+import 'package:app_freelancer/app/pages/homeprincip.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -28,7 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late User? user;
   String? _profileImageUrl;
   late String userEmail;
-  bool isLoading = true; // Adiciona uma variável para controlar o estado de carregamento
+  late List<dynamic> avaliable;
+  bool isLoading =
+      true; // Adiciona uma variável para controlar o estado de carregamento
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -53,8 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       infos = await authService.getinfos(userEmail);
       if (infos != null && infos!.isNotEmpty) {
         name = infos!['nome'] ?? "";
-        // Optionally, you might want to load the profile image URL here
-        // Example: _profileImageUrl = await authService.getProfileImageUrl(userEmail);
+        avaliable = infos!['nota'] ?? "";
       }
     } catch (e) {
       print("Erro ao carregar informações do usuário: $e");
@@ -72,7 +77,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final File fileObj = File(file.path);
       try {
         final Uint8List fileBytes = await fileObj.readAsBytes();
-        final ref = FirebaseStorage.instance.ref().child('images/$userEmail/Usuario/Perfil.jpg');
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('images/$userEmail/Usuario/Perfil.jpg');
         final uploadTask = ref.putData(fileBytes);
         await uploadTask.whenComplete(() => null);
         return await ref.getDownloadURL();
@@ -99,7 +106,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         reader.onLoadEnd.listen((_) async {
           final Uint8List fileBytes = reader.result as Uint8List;
-          final ref = FirebaseStorage.instance.ref().child('images/$userEmail/Usuario/Perfil.jpg');
+          final ref = FirebaseStorage.instance
+              .ref()
+              .child('images/$userEmail/Usuario/Perfil.jpg');
           try {
             final uploadTask = ref.putData(fileBytes);
             await uploadTask.whenComplete(() => null);
@@ -156,7 +165,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Exibe o indicador de progresso enquanto carrega
+          ? Center(
+              child:
+                  CircularProgressIndicator()) // Exibe o indicador de progresso enquanto carrega
           : SingleChildScrollView(
               child: Container(
                 padding: const EdgeInsets.all(16),
@@ -180,18 +191,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 10),
                     Text(
                       name,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Text(
                       userEmail,
-                      style: TextStyle(fontWeight: FontWeight.w300, fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w300, fontSize: 16),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 5),
+                    StarBar(rating: avaliable),
+                    const SizedBox(height: 10),
                     SizedBox(
                       width: 200,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => Editprofile(),
@@ -232,7 +247,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     ProfileMenuWidget(
                       title: 'Sair',
-                      onPress: () {},
+                      onPress: () {
+                        authService.logout(context);
+                      },
                       icon: Ionicons.backspace_outline,
                       endIcon: false,
                       textColor: Colors.red,
@@ -297,5 +314,92 @@ class ProfileMenuWidget extends StatelessWidget {
             )
           : null,
     );
+  }
+}
+
+class StarBar extends StatelessWidget {
+  final List<dynamic> rating;
+  final double size;
+
+  StarBar({
+    super.key,
+    required this.rating,
+    this.size = 24,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> _starList = [];
+    double avaliableSum = 0;
+
+    for (var i in rating) {
+      avaliableSum += i;
+    }
+
+    avaliableSum = avaliableSum / rating.length;
+    int realNumber = avaliableSum.floor();
+    double partNumber = avaliableSum - realNumber;
+
+    for (int i = 0; i < 5; i++) {
+      if (i < realNumber) {
+        _starList.add(Icon(
+          Icons.star,
+          color: Theme.of(context).primaryColor,
+          size: size,
+        ));
+      } else if (i == realNumber && partNumber > 0) {
+        _starList.add(SizedBox(
+          height: size,
+          width: size,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Icon(
+                Icons.star,
+                color: Colors.grey,
+                size: size,
+              ),
+              ClipRect(
+                clipper: _Clipper(part: partNumber),
+                child: Icon(
+                  Icons.star,
+                  color: Theme.of(context).primaryColor,
+                  size: size,
+                ),
+              ),
+            ],
+          ),
+        ));
+      } else {
+        _starList.add(Icon(
+          Icons.star,
+          color: Colors.grey,
+          size: size,
+        ));
+      }
+    }
+
+    _starList.add(SizedBox(width: 3));
+    _starList.add(Text('(${rating.length})'));
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: _starList,
+    );
+  }
+}
+
+class _Clipper extends CustomClipper<Rect> {
+  final double part;
+  _Clipper({required this.part});
+
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTRB(0.0, 0.0, size.width * part, size.height);
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
+    return true; // Redesenha o clip se mudar
   }
 }

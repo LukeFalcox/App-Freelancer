@@ -4,8 +4,8 @@ import 'package:app_freelancer/app/pages/freelancer/home/home_chat/chat/RecentCh
 import 'package:flutter/material.dart';
 
 
-class Homepage extends StatelessWidget {
-  const Homepage({super.key});
+class HomepageChat extends StatelessWidget {
+  const HomepageChat({super.key});
 
   @override
   Widget build(BuildContext context) {

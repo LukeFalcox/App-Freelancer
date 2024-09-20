@@ -146,13 +146,99 @@ class _HomeState extends State<Home> {
               //     ),
               //   ),
               // ),
-
               TextButton(onPressed: (){
                 widget.authService.getprojects('All');
-              }, child: Text("Testar"))
+              }, child: Text("Testar")),
+          
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class UserCard extends StatelessWidget {
+  final String imageUrl;
+  final String name;
+  final int age;
+  final double rating;
+  final String position;
+
+  UserCard({
+    required this.imageUrl,
+    required this.name,
+    required this.age,
+    required this.rating,
+    required this.position,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      padding: EdgeInsets.all(10),
+      width: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundImage: NetworkImage(imageUrl),
+          ),
+          SizedBox(height: 10),
+          Text(
+            name,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Idade: $age',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 12,
+            ),
+          ),
+          Text(
+            'Cargo: $position',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 12,
+            ),
+          ),
+          SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.star,
+                color: Colors.yellow[700],
+                size: 16,
+              ),
+              SizedBox(width: 5),
+              Text(
+                '$rating',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

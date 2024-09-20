@@ -18,45 +18,6 @@ class AuthService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
-  void register_complementos(String username, String cep, String phone,
-      UserCredential userCredential) {
-    try {
-      _firestore.collection('users').doc(userCredential.user!.uid).set(
-        {
-          'username': username,
-          'cep': cep,
-          'phone': phone,
-        },
-      );
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.code);
-    }
-  }
-
-  void register_card(String title, String desc, String propostMin,
-      String propostMax, DateTime? selectedDate, String uid) async {
-    try {
-      final String formattedDate = selectedDate != null
-          ? "${selectedDate.day}-${selectedDate.month}-${selectedDate.year}"
-          : '';
-
-      final infocard = <String, dynamic>{
-        'titulo': title,
-        'desc': desc,
-        'minima': propostMin,
-        'maxima': propostMax,
-        'prazo': formattedDate, // Aqui o DateTime é armazenado como String
-        'uid': uid
-      };
-
-    
-
-      await _firestore.collection('jobs').doc().set(infocard);
-    } catch (e) {
-      print('Error creating card: $e');
-    }
-  }
-
   void getprojects(String tipo) async {
       List projects = [];
       try {
@@ -140,73 +101,71 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> singOut() async {
-    return await _firebaseAuth.signOut();
-  }
+
 
   // ============================================================//
   // =============================CHATS==========================//
   // ============================================================//
 
-  Future<String> createChatrooms(String? cliente, String? freelancer) async {
-  try {
-    // Verifica se os parâmetros são nulos
-    if (cliente == null || freelancer == null) {
-      throw Exception('Parâmetros cliente e freelancer são obrigatórios');
-    }
+//   Future<String> createChatrooms(String? cliente, String? freelancer) async {
+//   try {
+//     // Verifica se os parâmetros são nulos
+//     if (cliente == null || freelancer == null) {
+//       throw Exception('Parâmetros cliente e freelancer são obrigatórios');
+//     }
 
-    // Busca os documentos do cliente e do freelancer
-    QuerySnapshot queryCliente = await _firestore
-        .collection('users')
-        .where('email', isEqualTo: cliente)
-        .get();
+//     // Busca os documentos do cliente e do freelancer
+//     QuerySnapshot queryCliente = await _firestore
+//         .collection('users')
+//         .where('email', isEqualTo: cliente)
+//         .get();
 
-    QuerySnapshot queryFreelancer = await _firestore
-        .collection('users')
-        .where('email', isEqualTo: freelancer)
-        .get();
+//     QuerySnapshot queryFreelancer = await _firestore
+//         .collection('users')
+//         .where('email', isEqualTo: freelancer)
+//         .get();
 
-    // Verifica se os documentos foram encontrados
-    if (queryCliente.docs.isEmpty || queryFreelancer.docs.isEmpty) {
-      throw Exception('Cliente ou freelancer não encontrado');
-    }
+//     // Verifica se os documentos foram encontrados
+//     if (queryCliente.docs.isEmpty || queryFreelancer.docs.isEmpty) {
+//       throw Exception('Cliente ou freelancer não encontrado');
+//     }
 
-    // Extrai os dados relevantes
-    DocumentSnapshot docCliente = queryCliente.docs.first;
-    DocumentSnapshot docFreelancer = queryFreelancer.docs.first;
+//     // Extrai os dados relevantes
+//     DocumentSnapshot docCliente = queryCliente.docs.first;
+//     DocumentSnapshot docFreelancer = queryFreelancer.docs.first;
 
-    Map<String, dynamic> userDataCliente = docCliente.data()! as Map<String, dynamic>;
-    Map<String, dynamic> userDataFreelancer = docFreelancer.data()! as Map<String, dynamic>;
+//     Map<String, dynamic> userDataCliente = docCliente.data()! as Map<String, dynamic>;
+//     Map<String, dynamic> userDataFreelancer = docFreelancer.data()! as Map<String, dynamic>;
 
-    String nomeCliente = userDataCliente['email'];
-    String emailFreelancer = userDataFreelancer['email'];
-    String uidfree = userDataFreelancer['uid'];
-    String uidcli = userDataCliente['uid'];
+//     String nomeCliente = userDataCliente['email'];
+//     String emailFreelancer = userDataFreelancer['email'];
+//     String uidfree = userDataFreelancer['uid'];
+//     String uidcli = userDataCliente['uid'];
 
-    final infoprops = <String, dynamic>{
-      'cliente': nomeCliente,
-      'freelancer': emailFreelancer,
-      'uidcli': uidcli,
-      'uidfree': uidfree,
-    };
+//     final infoprops = <String, dynamic>{
+//       'cliente': nomeCliente,
+//       'freelancer': emailFreelancer,
+//       'uidcli': uidcli,
+//       'uidfree': uidfree,
+//     };
 
-    // Cria um novo documento na coleção 'chat' com um ID gerado automaticamente
-    DocumentReference chatRoomRef = _firestore.collection('chat').doc();
+//     // Cria um novo documento na coleção 'chat' com um ID gerado automaticamente
+//     DocumentReference chatRoomRef = _firestore.collection('chat').doc();
 
-    // Obtém o ID do documento criado
-    String chatRoomId = chatRoomRef.id;
+//     // Obtém o ID do documento criado
+//     String chatRoomId = chatRoomRef.id;
 
-    // Verifica se o documento pai foi criado antes de adicionar à subcoleção
-    await chatRoomRef.set({'createdAt': FieldValue.serverTimestamp()});
+//     // Verifica se o documento pai foi criado antes de adicionar à subcoleção
+//     await chatRoomRef.set({'createdAt': FieldValue.serverTimestamp()});
 
-    // Adiciona os dados à subcoleção 'users'
-    await chatRoomRef.collection('users').add(infoprops);
+//     // Adiciona os dados à subcoleção 'users'
+//     await chatRoomRef.collection('users').add(infoprops);
 
-    return chatRoomId;
-  } on FirebaseAuthException catch (e) {
-    throw Exception(e.code);
-  }
-}
+//     return chatRoomId;
+//   } on FirebaseAuthException catch (e) {
+//     throw Exception(e.code);
+//   }
+// }
 
 Future<Map<String, dynamic>?> getInfosUsers(String? email) async {
   if (email == null || email.isEmpty) {
@@ -280,21 +239,6 @@ Future<Map<String, dynamic>?> getInfosUsers(String? email) async {
     }
   }
 
-  Future<void> excluiChatrooms(String? cliente, String? freelancer) async {
-    try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('chat')
-          .where('cliente', isEqualTo: cliente)
-          .where('freelancer', isEqualTo: freelancer)
-          .get();
-
-      for (var doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.code);
-    }
-  }
 
   Future<void> sendMessage(String receiverId, String message,
       String formattedTime, chatRoomId) async {
@@ -438,13 +382,11 @@ Future<String?> uploadMobile(String path, String userEmail) async {
 
   Future<String?> getArea(String email) async {
   try {
-    // Consulta a coleção de freelancers onde o email corresponde
     QuerySnapshot<Map<String, dynamic>> area = await _firestore
         .collection('freelancers')
         .where('email', isEqualTo: email)
         .get();
 
-    // Verifica se encontrou documentos e retorna o campo 'area'
     if (area.docs.isNotEmpty) {
       return area.docs.first.data()['area'] as String?;
     } else {
@@ -458,43 +400,81 @@ Future<String?> uploadMobile(String path, String userEmail) async {
 }
 
 Future<Map<String, dynamic>?> getinfos(String email) async {
-  QuerySnapshot<Map<String, dynamic>> infos = await _firestore
-        .collection('freelancers')
+  // Primeira consulta na coleção 'freelancers'
+  QuerySnapshot<Map<String, dynamic>> infosFreelancers = await _firestore
+      .collection('freelancers')
+      .where('email', isEqualTo: email)
+      .get();
+
+  if (infosFreelancers.docs.isNotEmpty) {
+    return infosFreelancers.docs.first.data();
+  } else {
+    // Se não encontrar na coleção 'freelancers', procurar na coleção 'clientes'
+    QuerySnapshot<Map<String, dynamic>> infosClientes = await _firestore
+        .collection('clientes')
         .where('email', isEqualTo: email)
         .get();
 
-        if(infos.docs.isNotEmpty){
-          return infos.docs.first.data();
-        }
-        else{
-          return null;
-        }
+    if (infosClientes.docs.isNotEmpty) {
+      return infosClientes.docs.first.data();
+    } else {
+      return null;
+    }
+  }
 }
 
 
-Future<void> saveProfile(String name, String desc, context) async {
-    if (name.isNotEmpty && desc.isNotEmpty) {
-      try {
-        await _firestore.collection('profiles').add({
-          'name': name,
-          'description': desc,
-        });
+Future<void> saveProfile(String name, String desc, context, String email) async {
+  if (name.isNotEmpty && desc.isNotEmpty && email.isNotEmpty) {
+    try {
+      // Tenta atualizar na coleção 'freelancers'
+      bool updated = await _updateProfile('freelancers', email, name, desc);
+      
+      // Se não encontrou na coleção 'freelancers', tenta na coleção 'clientes'
+      if (!updated) {
+        updated = await _updateProfile('clientes', email, name, desc);
+      }
+
+      if (!updated) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile saved successfully!')),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save profile: $e')),
+          const SnackBar(content: Text('Usuário não encontrado.')),
         );
       }
-    } else {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill out all fields.')),
+        SnackBar(content: Text('Erro ao atualizar perfil: $e')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please fill out all fields.')),
+    );
   }
+}
 
-Future<List<String>> getEsp(String area) async {
+Future<bool> _updateProfile(String collection, String email, String name, String desc) async {
+  QuerySnapshot<Map<String, dynamic>> getInfosUsers = await _firestore
+      .collection(collection)
+      .where('email', isEqualTo: email)
+      .get();
+  
+  if (getInfosUsers.docs.isNotEmpty) {
+    var doc = getInfosUsers.docs.first; // Pega o primeiro documento encontrado
+    Map<String, dynamic> updateinfos = {
+      "desc": desc,
+      "nome": name,
+    };
+    // Atualiza o documento usando a referência do documento
+    await _firestore.collection(collection).doc(doc.id).update(updateinfos);
+    return true; // Retorna true se a atualização for bem-sucedida
+  }
+  
+  return false; // Retorna false se nenhum documento foi atualizado
+}
+
+
+
+Future<List<String>> getHab(String area, String type) async {
   try {
     // Obtém o documento de filtros a partir do ID fornecido
     DocumentSnapshot<Map<String, dynamic>> doc = await _firestore
@@ -507,8 +487,8 @@ Future<List<String>> getEsp(String area) async {
       Map<String, dynamic>? data = doc.data();
 
       // Verifica se o campo 'curses' está presente no documento
-      if (data != null && data.containsKey('curses')) {
-        Map<String, dynamic>? map = data['curses'];
+      if (data != null && data.containsKey(type)) {
+        Map<String, dynamic>? map = data[type];
 
         // Verifica se o mapa contém a chave da área especificada
         if (map != null && map.containsKey(area)) {
@@ -540,28 +520,6 @@ Future<List<String>> getEsp(String area) async {
 
 
 
-Future<void> updateDadosFreelancer(String email, List, String name, String des) async {
-  
-  final infoprops = <String, dynamic>{
-    'name': name,
-    'desc': des,
-  };
-
-  try {
-    final querySnapshot = await _firestore.collection('freelancers').where('email', isEqualTo: email).get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      final docId = querySnapshot.docs.first.id;
-      await _firestore.collection('freelancers').doc(docId).update(infoprops);
-      print('Dados atualizados com sucesso!');
-    } else {
-      print('Nenhum documento encontrado com o email fornecido.');
-    }
-  } catch (e) {
-    print('Erro ao atualizar dados: $e');
-  }
-}
-
 Future<void> save_classification(Map<int, bool> _selectedItems, List<String> items, String email) async {
   List<dynamic> itemsT = []; 
   List<dynamic> saveItems = [];
@@ -587,66 +545,38 @@ Future<void> save_classification(Map<int, bool> _selectedItems, List<String> ite
     'classificacao': saveItems,
   };
 
-  try {
-    // Consultando o documento no Firestore
-    QuerySnapshot querySnapshot = await _firestore
-        .collection('freelancers')
-        .where('email', isEqualTo: email)
-        .get();
+try {
+  // Consultando o documento no Firestore
+  QuerySnapshot querySnapshot = await _firestore
+      .collection('freelancers')
+      .where('email', isEqualTo: email)
+      .get();
 
+  if (querySnapshot.docs.isNotEmpty) {
+    DocumentSnapshot document = querySnapshot.docs.first;
+    DocumentReference documentRef = document.reference;
+
+    // Atualizando o documento com os novos dados
+    await documentRef.update(infoprops);
+    print('Documento atualizado com sucesso.');
+  } else {
+    querySnapshot = await _firestore.collection('clientes').where('email', isEqualTo: email).get();
     if (querySnapshot.docs.isNotEmpty) {
-      DocumentSnapshot document = querySnapshot.docs.first;
-      DocumentReference documentRef = document.reference;
+    DocumentSnapshot document = querySnapshot.docs.first;
+    DocumentReference documentRef = document.reference;
 
-      // Atualizando o documento com os novos dados
-      await documentRef.update(infoprops);
-      print('Documento atualizado com sucesso.');
-    } else {
-      print('Nenhum documento encontrado com o email $email');
-    }
-  } catch (e) {
-    print('Erro ao atualizar o documento: $e');
+    // Atualizando o documento com os novos dados
+    await documentRef.update(infoprops);
+    print('Documento atualizado com sucesso.');
+  } 
+    // Aqui você pode adicionar o código para lidar com a atualização da coleção 'clientes' se necessário
   }
+} catch (e) {
+  print('Erro ao atualizar o documento: $e');
 }
 
-  Future<List<Map<String, dynamic>>> get_data() async {
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await _firestore.collection('cards').get();
+}
 
-    List<Map<String, dynamic>> cards =
-        snapshot.docs.map((doc) => doc.data()).toList();
-    return cards;
-  }
-
-  void register_info(String name, String skills, String projects, String exp,
-      String taxa, dynamic dynamicImage, dynamic uid) async {
-    try {
-      // Upload da imagem para o Firebase Storage
-      String fileName =
-          'profile_images/${DateTime.now().millisecondsSinceEpoch}.png';
-      Reference storageRef = FirebaseStorage.instance.ref().child(fileName);
-      UploadTask uploadTask = storageRef.putFile(dynamicImage);
-      TaskSnapshot snapshot = await uploadTask;
-      String imageUrl = await snapshot.ref.getDownloadURL();
-
-      // Criação do objeto infocard com a URL da imagem
-      final infocard = <String, dynamic>{
-        'name': name,
-        'skills': skills,
-        'projects': projects,
-        'exp': exp,
-        'taxa': taxa,
-        'imageUrl': imageUrl, // Adiciona a URL da imagem ao objeto infocard
-      };
 
       // Armazenando o infocard no Firestore
-      await _firestore
-          .collection('users')
-          .doc(uid) // Use o UID como o ID do documento
-          .update(infocard);
-      print('Card criado com sucesso!');
-    } catch (e) {
-      print('Erro ao criar card: $e');
-    }
-  }
 }

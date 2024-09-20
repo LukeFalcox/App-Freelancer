@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_freelancer/app/pages/clientes/budget.dart';
 import 'package:app_freelancer/app/pages/clientes/constructorcards.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -77,17 +78,17 @@ class _FilterscreenState extends State<Filterscreen> {
                     Constructorcards(
                       image: "image/img/hacker.png",
                       tit: "Informatica",
-                      area: 'ti',
+                      destinationWidget: Budget(area: 'ti'),
                     ),
                     Constructorcards(
                       image: "image/img/administration.png",
                       tit: "Administração",
-                      area: 'administration',
+                      destinationWidget: Budget(area: 'administration'),
                     ),
                     Constructorcards(
                       image: "image/img/engineering.png",
                       tit: "Engenharia",
-                      area: 'edifecation',
+                      destinationWidget: Budget(area: 'edifecation'),
                     ),
                   ],
                 ),

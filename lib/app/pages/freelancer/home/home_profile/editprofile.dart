@@ -1,4 +1,6 @@
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_page.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_profile/checkbox.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_profile/expandingtext.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_profile/profile.dart';
@@ -53,7 +55,7 @@ class _EditprofileState extends State<Editprofile> {
   }) async {
     if (userEmail.isNotEmpty) {
       String? area = await authService.getArea(userEmail);
-      List<String> esp = await authService.getEsp(area!);
+      List<String> esp = await authService.getHab(area!,'curses');
       return esp;
     } else {
       return []; // Return empty list if user is not logged in or email is not available
@@ -126,8 +128,8 @@ class _EditprofileState extends State<Editprofile> {
                 child: ElevatedButton(
                   onPressed: () async {
                     // Call the save function when the button is pressed
-                    await authService.saveProfile(controllerName.text, controllerDesc.text, context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen(),));
+                    await authService.saveProfile(controllerName.text, controllerDesc.text, context,userEmail );
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
@@ -135,7 +137,7 @@ class _EditprofileState extends State<Editprofile> {
                     shape: const StadiumBorder(),
                   ),
                   child: const Text(
-                    "Edit Profile",
+                    "Salvar Alterações",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.black),
                   ),
                 ),

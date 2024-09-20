@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
             authService: AuthService(),
           ),
            const ProfileScreen(),
-           Homepage(),
+           HomepageChat(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

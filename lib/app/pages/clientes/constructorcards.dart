@@ -1,16 +1,15 @@
-import 'package:app_freelancer/app/pages/clientes/budget.dart';
 import 'package:flutter/material.dart';
 
 class Constructorcards extends StatefulWidget {
   final String image;
   final String tit;
-  final String area;
+  final Widget destinationWidget;
 
   const Constructorcards({
     super.key,
     required this.image,
     required this.tit,
-    required this.area,
+    required this.destinationWidget,
   });
 
   @override
@@ -25,7 +24,7 @@ class _ConstructorcardsState extends State<Constructorcards> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Budget(area: widget.area),
+            builder: (context) => widget.destinationWidget, 
           ),
         );
       },
@@ -42,7 +41,7 @@ class _ConstructorcardsState extends State<Constructorcards> {
               spreadRadius: 3,
               blurRadius: 10,
               offset: const Offset(0, 3),
-            )
+            ),
           ],
         ),
         child: Padding(
@@ -54,7 +53,10 @@ class _ConstructorcardsState extends State<Constructorcards> {
               const SizedBox(height: 10),
               Text(
                 widget.tit,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
