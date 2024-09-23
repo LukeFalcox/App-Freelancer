@@ -1,3 +1,5 @@
+import 'package:app_freelancer/app/pages/freelancer/home/home_profile/profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
@@ -15,6 +17,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late FirebaseAuth _auth;
+  late User? user;
+  late String userEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth = FirebaseAuth.instance;
+    user = _auth.currentUser;
+    userEmail = user?.email ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     const categories = [
@@ -46,7 +60,7 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "What are you\ncooking today",
+                "Novos Projetos para você",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -142,14 +156,85 @@ class _HomeState extends State<Home> {
               //   scrollDirection: Axis.horizontal,
               //   child: Row(
               //     children: List.generate(
-                   
+
               //     ),
               //   ),
               // ),
-              TextButton(onPressed: (){
-                widget.authService.getprojects('All');
-              }, child: Text("Testar")),
-          
+              SingleChildScrollView(
+                child: FutureBuilder<List<Map<String, dynamic>>?>(
+                  future: widget.authService
+                      .getprojectsorfreelancers("All", userEmail),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return const Center(
+                          child: Text('Erro ao carregar informações.'));
+                    }
+                    if (snapshot.hasData) {
+                      final List<Map<String, dynamic>>? userInfoList =
+                          snapshot.data;
+                      if (userInfoList == null || userInfoList.isEmpty) {
+                        return const Center(
+                            child: Text('Nenhum projeto encontrado.'));
+                      }
+
+                      // Constrói a ListView.builder na horizontal
+                      // Constrói a ListView.builder na horizontal
+                      return SizedBox(
+                        height:
+                            250, // Altura definida para o ListView horizontal
+                        child: ListView.builder(
+                          scrollDirection:
+                              Axis.horizontal, // Define a direção da rolagem
+                          itemCount: userInfoList.length,
+                          itemBuilder: (context, index) {
+                            final userInfo = userInfoList[index];
+                            final emailCli = userInfo['emailcli'];
+
+                            return FutureBuilder<Map<String, dynamic>>(
+                              future: widget.authService.getClientInfo(
+                                  emailCli), // Combina as funções getname e getnota
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                if (snapshot.hasError) {
+                                  return const Center(
+                                      child: Text(
+                                          'Erro ao carregar informações.'));
+                                }
+                                if (snapshot.hasData && snapshot.data != null) {
+                                  final clientData = snapshot.data!;
+                                  final name = clientData['name'] ??
+                                      'Nome Desconhecido'; // Verificação do nome
+                                  final nota = clientData['nota'] ??
+                                      [0]; // Verificação da nota
+
+                                  return UserCard(
+                                    name: name,
+                                    rating: nota,
+                                    classification:
+                                        userInfo['classification'] ?? [],
+                                  );
+                                }
+
+                                return const Text(
+                                    'Informações não disponíveis.');
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    }
+
+                    return const Center(child: Text('Nenhum dado disponível.'));
+                  },
+                ),
+              )
             ],
           ),
         ),
@@ -159,26 +244,23 @@ class _HomeState extends State<Home> {
 }
 
 class UserCard extends StatelessWidget {
-  final String imageUrl;
+
   final String name;
-  final int age;
-  final double rating;
-  final String position;
+  final List<dynamic> rating;
+  final List classification;
 
   UserCard({
-    required this.imageUrl,
     required this.name,
-    required this.age,
     required this.rating,
-    required this.position,
+    required this.classification,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      padding: EdgeInsets.all(10),
-      width: 150,
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.all(10),
+      width: 150, // Define a largura fixa
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
@@ -187,55 +269,40 @@ class UserCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundImage: NetworkImage(imageUrl),
+            backgroundImage: const AssetImage('assets/default_avatar.png')
+                    as ImageProvider, // Verificação se a URL da imagem está vazia
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            name,
-            style: TextStyle(
+            name.isNotEmpty ? name : 'Nome Desconhecido', // Validação do nome
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
-          Text(
-            'Idade: $age',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 12,
-            ),
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 4.0,
+            children: classification.map((language) {
+              return Chip(
+                label: Text(language),
+              );
+            }).toList(),
           ),
-          Text(
-            'Cargo: $position',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 12,
-            ),
-          ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.star,
-                color: Colors.yellow[700],
-                size: 16,
-              ),
-              SizedBox(width: 5),
-              Text(
-                '$rating',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
+              StarBar(rating: rating,size: 14,), // Verificação de rating
             ],
           ),
         ],

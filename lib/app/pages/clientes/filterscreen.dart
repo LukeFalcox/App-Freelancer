@@ -1,12 +1,15 @@
 import 'dart:async';
-
 import 'package:app_freelancer/app/pages/clientes/budget.dart';
 import 'package:app_freelancer/app/pages/clientes/constructorcards.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:app_freelancer/app/pages/configs/auth_service.dart'; // Importando AuthService
 
 class Filterscreen extends StatefulWidget {
-  const Filterscreen({super.key});
+  final AuthService authService;
+  final String userEmail; 
+
+  const Filterscreen({super.key, required this.authService, required this.userEmail});
 
   @override
   State<Filterscreen> createState() => _FilterscreenState();
@@ -47,7 +50,7 @@ class _FilterscreenState extends State<Filterscreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Areas",
+            "Áreas",
             style: TextStyle(
                 fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
           ),
@@ -61,34 +64,44 @@ class _FilterscreenState extends State<Filterscreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Escolha a area do Projeto.",
-                  style: TextStyle(
-                      color: Colors.blue.shade600,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(
-                height: 10,
+              Text(
+                "Escolha a área do Projeto.",
+                style: TextStyle(
+                  color: Colors.blue.shade600,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              const SizedBox(height: 10),
               SizedBox(
                 width: 200,
                 height: 265,
                 child: PageView(
                   controller: _controller,
-                  children: const [
+                  children: [
                     Constructorcards(
-                      image: "image/img/hacker.png",
-                      tit: "Informatica",
-                      destinationWidget: Budget(area: 'ti'),
+                      image: "image/img/administration.png",
+                      email: widget.userEmail, // Passando o email do usuário
+                      authService: widget.authService, // Passando o authService
+                      area: "administration",
+                      tit: "Administração",
+                      destinationWidget: Budget(area: 'administration'), 
                     ),
                     Constructorcards(
                       image: "image/img/administration.png",
-                      tit: "Administração",
-                      destinationWidget: Budget(area: 'administration'),
+                      email: widget.userEmail, // Passando o email do usuário
+                      authService: widget.authService, // Passando o authService
+                      area: "ti",
+                      tit: "Tecnologia da Informação",
+                      destinationWidget: Budget(area: 'ti'), 
                     ),
                     Constructorcards(
                       image: "image/img/engineering.png",
+                      email: widget.userEmail, // Passando o email do usuário
+                      authService: widget.authService, // Passando o authService
+                      area: "engineering",
                       tit: "Engenharia",
-                      destinationWidget: Budget(area: 'edifecation'),
+                      destinationWidget: Budget(area: 'engineering'), 
                     ),
                   ],
                 ),
@@ -104,7 +117,7 @@ class _FilterscreenState extends State<Filterscreen> {
                   spacing: 16,
                   verticalOffset: 40,
                 ),
-              )
+              ),
             ],
           ),
         ));

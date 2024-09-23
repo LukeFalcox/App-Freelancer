@@ -1,4 +1,6 @@
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -40,17 +42,26 @@ class _PreRegisterState extends State<PreRegister> {
   }
 
   Future<List<String>> _optioncheck() async {
-    _auth = FirebaseAuth.instance;
-    user = _auth.currentUser;
-    userEmail = user?.email ?? ''; 
-    if (userEmail.isNotEmpty) {
-      String? area = await widget.authService.getArea(userEmail);
-      List<String> esp = await widget.authService.getHab(area!, 'curses');
-      return esp;
-    } else {
-      return []; // Retorna lista vazia se o usuário não estiver logado
-    }
+  _auth = FirebaseAuth.instance;
+  user = _auth.currentUser;
+  
+  if (user == null) {
+    // Aqui você pode redirecionar o usuário para a tela de login
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Usuário não autenticado. Faça login novamente.')),
+    );
+    return [];
   }
+
+  userEmail = user?.email ?? ''; 
+  if (userEmail.isNotEmpty) {
+    String? area = await widget.authService.getArea(userEmail);
+    List<String> esp = await widget.authService.getHab(area!, 'habilidades');
+    return esp;
+  } else {
+    return []; // Retorna lista vazia se o usuário não estiver logado
+  }
+}
 
   void _addLanguage(String language) {
     setState(() {
@@ -89,13 +100,15 @@ class _PreRegisterState extends State<PreRegister> {
 
     setState(() {
       _isSaving = true;
-    });
+    }); // Aqui ira salvar as informações
 
     await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _isSaving = false;
     });
+
+    await widget.authService.savePreregister(_experiencesController.text, _nameController.text, selectedLanguages, _projectsController.text, userEmail);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Dados salvos com sucesso')),
@@ -105,7 +118,13 @@ class _PreRegisterState extends State<PreRegister> {
     _projectsController.clear();
     _experiencesController.clear();
     selectedLanguages.clear();
+
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage(),));
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {

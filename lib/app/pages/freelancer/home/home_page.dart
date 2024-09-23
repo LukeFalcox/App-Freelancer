@@ -1,4 +1,3 @@
-// ignore_for_file: file_names
 import 'package:app_freelancer/app/pages/freelancer/home/home.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_profile/profile.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_chat/chat/HomePage.dart';
@@ -29,51 +28,57 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-      // backgroundColor: const Color(0xFF000000),
-      body: PageView(
-    
-        controller: pageCont,
-        onPageChanged: setCurrentPage,
-        children: [
-           Home(
-            authService: AuthService(),
-          ),
-           const ProfileScreen(),
-           HomepageChat(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: true,
-        unselectedLabelStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontSize: 14),
-        unselectedItemColor: const Color.fromARGB(255, 0, 0, 0), //<-- add this
-        currentIndex: currentPage,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color:  Color.fromARGB(255, 30, 81, 250),),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people, color:  Color.fromARGB(255, 30, 81, 250),),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble,
-                color:  Color.fromARGB(255, 30, 81, 250),),
-            label: 'Chat',
-          ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(
-          //     Icons.work,
-          //     color:  Color.fromARGB(255, 30, 81, 250),
-          //   ),
-          //   label: 'Settings',
-          // ),
-        ],
-        onTap: (page) {
-          pageCont.animateToPage(page,
-              duration: const Duration(milliseconds: 900), curve: Curves.ease);
-        },
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: PageView(
+          controller: pageCont,
+          onPageChanged: setCurrentPage,
+          physics: const NeverScrollableScrollPhysics(), // Desativa o gesto de deslizar
+          children: [
+            Home(authService: AuthService()),
+            const ProfileScreen(),
+            HomepageChat(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          showUnselectedLabels: true,
+          unselectedLabelStyle: const TextStyle(
+              color: Color.fromARGB(255, 0, 0, 0), fontSize: 14),
+          unselectedItemColor:
+              const Color.fromARGB(255, 0, 0, 0), //<-- add this
+          currentIndex: currentPage,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.home,
+                color: Color.fromARGB(255, 30, 81, 250),
+              ),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.people,
+                color: Color.fromARGB(255, 30, 81, 250),
+              ),
+              label: 'Profile',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.chat_bubble,
+                color: Color.fromARGB(255, 30, 81, 250),
+              ),
+              label: 'Chat',
+            ),
+          ],
+          onTap: (page) {
+            pageCont.animateToPage(page,
+                duration: const Duration(milliseconds: 900),
+                curve: Curves.ease);
+          },
+        ),
       ),
     );
+  }
 }

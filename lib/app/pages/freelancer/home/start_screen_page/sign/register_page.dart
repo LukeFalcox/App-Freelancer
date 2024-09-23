@@ -1,5 +1,6 @@
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/start_screen_page/sign/login_page.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/start_screen_page/sign/pre-register.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/start_screen_page/sign/proffisional.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,8 +15,8 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmpasswordController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _confirmpasswordController =
+      TextEditingController();
   bool isLoading = false;
 
   // Função de validação de email
@@ -25,48 +26,64 @@ class _RegisterState extends State<Register> {
   }
 
   // Função de cadastro de usuário
-  Future<void> signUp() async {
-    if (_passwordController.text != _confirmpasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("As senhas não coincidem")),
-      );
-      return;
-    }
+  Future<void> signUp(String type) async {
+  if (_passwordController.text != _confirmpasswordController.text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("As senhas não coincidem")),
+    );
+    return;
+  }
 
-    if (!_isEmailValid(_emailController.text)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email inválido")),
-      );
-      return;
-    }
+  if (!_isEmailValid(_emailController.text)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Email inválido")),
+    );
+    return;
+  }
+
+  setState(() {
+    isLoading = true;
+  });
+
+  // Exibe um SnackBar informando que o cadastro está em andamento
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Cadastro em andamento..."),
+      duration: Duration(seconds: 3), // Mantém a mensagem por 3 segundos
+    ),
+  );
+
+  try {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    await authService.register_users(_emailController.text, _passwordController.text, type);
 
     setState(() {
-      isLoading = true;
+      isLoading = false;
     });
 
-    try {
-      final authService = Provider.of<AuthService>(context, listen: false);
-      await authService.register_users(
-          _emailController.text, _passwordController.text, _nameController.text);
-
-      setState(() {
-        isLoading = false;
-      });
-
+    // Se for freelancer, navega para a tela Profissional
+    if (type == 'freelancers') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) =>  Profissional(authService: authService,)),
+        MaterialPageRoute(builder: (context) => Profissional(authService: authService)),
       );
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
+    } else {
+      // Se for cliente, navega para a tela PreRegister
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PreRegister(authService: authService)),
       );
     }
+  } catch (e) {
+    setState(() {
+      isLoading = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(e.toString())),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -158,32 +175,61 @@ class _RegisterState extends State<Register> {
                         ),
                       ),
                       const SizedBox(height: 40),
-                      isLoading
-                          ? const CircularProgressIndicator()
-                          : ElevatedButton(
-                              onPressed: signUp,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(255, 0, 35, 230),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                                  onPressed: () => signUp(
+                                      'freelancers'), // Passa a função corretamente
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 0, 35, 230),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 25),
+                                    elevation: 5,
+                                  ),
+                                  child: const Text(
+                                    "Cadastrar como Freelancer",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 50),
-                                elevation: 5,
-                              ),
-                              child: const Text(
-                                "Cadastrar-se",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                          const SizedBox(width: 20),
+
+                                  ElevatedButton(
+                                  onPressed: () => signUp(
+                                      'clientes'), // Passa a função corretamente
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 0, 35, 230),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 25),
+                                    elevation: 5,
+                                  ),
+                                  child: const Text(
+                                    "Cadastrar como Cliente",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
+                        ],
+                      ),
                       const SizedBox(height: 20),
                       TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const PageLogin()),
+                            MaterialPageRoute(
+                                builder: (context) => const PageLogin()),
                           );
                         },
                         child: const Text(

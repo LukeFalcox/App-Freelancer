@@ -1,6 +1,7 @@
 // Página de seleção de áreas
 import 'dart:async';
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:app_freelancer/app/pages/clientes/constructorcards.dart';
@@ -17,6 +18,8 @@ class Profissional extends StatefulWidget {
 class _ProfissionalState extends State<Profissional> {
   final PageController _controller = PageController();
   Timer? _timer;
+  final User? user = FirebaseAuth.instance.currentUser;
+  late String  userEmail = user?.email ?? ''; 
 
   @override
   void initState() {
@@ -81,18 +84,27 @@ class _ProfissionalState extends State<Profissional> {
                 children: [
                   Constructorcards(
                     image: "image/img/hacker.png",
+                    email: userEmail, 
+                    authService: widget.authService,
+                    area: "ti",
                     tit: "Informática",
                     destinationWidget:
                         PreRegister(authService: widget.authService), 
                   ),
                   Constructorcards(
                     image: "image/img/administration.png",
+                    email: userEmail, 
+                    authService: widget.authService,
+                    area: "administration",
                     tit: "Administração",
                     destinationWidget:
                         PreRegister(authService: widget.authService), 
                   ),
                   Constructorcards(
                     image: "image/img/engineering.png",
+                    email: userEmail, 
+                    authService: widget.authService,
+                    area: "edifecation",
                     tit: "Engenharia",
                     destinationWidget:
                         PreRegister(authService: widget.authService), 

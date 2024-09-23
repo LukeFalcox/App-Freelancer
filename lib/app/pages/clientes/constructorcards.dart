@@ -1,16 +1,25 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+
+import 'package:app_freelancer/app/pages/configs/auth_service.dart';
 
 class Constructorcards extends StatefulWidget {
   final String image;
   final String tit;
   final Widget destinationWidget;
+  final String email;
+  final AuthService authService;
+  final String area;
 
   const Constructorcards({
-    super.key,
+    Key? key,
     required this.image,
     required this.tit,
     required this.destinationWidget,
-  });
+    required this.email,
+    required this.authService,
+    required this.area,
+  }) : super(key: key);
 
   @override
   State<Constructorcards> createState() => _ConstructorcardsState();
@@ -20,7 +29,9 @@ class _ConstructorcardsState extends State<Constructorcards> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+      await  widget.authService.saveArea(widget.email,widget.area);
+
         Navigator.push(
           context,
           MaterialPageRoute(

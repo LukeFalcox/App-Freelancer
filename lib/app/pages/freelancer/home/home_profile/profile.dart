@@ -330,57 +330,74 @@ class StarBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> _starList = [];
-    double avaliableSum = 0;
-
-    for (var i in rating) {
-      avaliableSum += i;
-    }
-
-    avaliableSum = avaliableSum / rating.length;
-    int realNumber = avaliableSum.floor();
-    double partNumber = avaliableSum - realNumber;
-
-    for (int i = 0; i < 5; i++) {
-      if (i < realNumber) {
-        _starList.add(Icon(
-          Icons.star,
-          color: Theme.of(context).primaryColor,
-          size: size,
-        ));
-      } else if (i == realNumber && partNumber > 0) {
-        _starList.add(SizedBox(
-          height: size,
-          width: size,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Icon(
-                Icons.star,
-                color: Colors.grey,
-                size: size,
-              ),
-              ClipRect(
-                clipper: _Clipper(part: partNumber),
-                child: Icon(
-                  Icons.star,
-                  color: Theme.of(context).primaryColor,
-                  size: size,
-                ),
-              ),
-            ],
-          ),
-        ));
-      } else {
+    
+    // Verifica se há avaliações
+    if (rating.isEmpty) {
+      // Caso não haja avaliações, adiciona estrelas desmarcadas (zeradas)
+      for (int i = 0; i < 5; i++) {
         _starList.add(Icon(
           Icons.star,
           color: Colors.grey,
           size: size,
         ));
       }
-    }
+      // Não exibe a nota, já que não há avaliações
+      _starList.add(SizedBox(width: 3));
+      _starList.add(Text('(0)'));
+    } else {
+      // Calcula a soma das avaliações
+      double avaliableSum = 0;
+      for (var i in rating) {
+        avaliableSum += i;
+      }
 
-    _starList.add(SizedBox(width: 3));
-    _starList.add(Text('(${rating.length})'));
+      avaliableSum = avaliableSum / rating.length;
+      int realNumber = avaliableSum.floor();
+      double partNumber = avaliableSum - realNumber;
+
+      // Adiciona estrelas completas, parciais ou desmarcadas conforme a avaliação
+      for (int i = 0; i < 5; i++) {
+        if (i < realNumber) {
+          _starList.add(Icon(
+            Icons.star,
+            color: Theme.of(context).primaryColor,
+            size: size,
+          ));
+        } else if (i == realNumber && partNumber > 0) {
+          _starList.add(SizedBox(
+            height: size,
+            width: size,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Icon(
+                  Icons.star,
+                  color: Colors.grey,
+                  size: size,
+                ),
+                ClipRect(
+                  clipper: _Clipper(part: partNumber),
+                  child: Icon(
+                    Icons.star,
+                    color: Theme.of(context).primaryColor,
+                    size: size,
+                  ),
+                ),
+              ],
+            ),
+          ));
+        } else {
+          _starList.add(Icon(
+            Icons.star,
+            color: Colors.grey,
+            size: size,
+          ));
+        }
+      }
+
+      _starList.add(SizedBox(width: 3));
+      _starList.add(Text('(${rating.length})'));
+    }
 
     return Row(
       mainAxisSize: MainAxisSize.min,

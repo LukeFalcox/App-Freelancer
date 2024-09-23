@@ -24,7 +24,7 @@ class CheckAuthState extends StatelessWidget {
           } else {
             // Se o usuário estiver autenticado, vá para a tela principal
             if (snapshot.hasData && snapshot.data != null) {
-              return const HomePrincip();
+              return const HomePage();
             } else {
               // Caso contrário, vá para a tela de login
               return const HomePrincip();

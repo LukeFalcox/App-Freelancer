@@ -18,40 +18,85 @@ class AuthService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
-  void getprojects(String tipo) async {
+  Future<List<Map<String, dynamic>>?> getprojectsorfreelancers(String tipo, String email) async {
       List projects = [];
       try {
-        if (tipo == 'All') {
-          QuerySnapshot querySnapshot = await _firestore.collection('projects').get();
 
-          List<QueryDocumentSnapshot> documents = querySnapshot.docs; 
+          final freelancerSnapshot = await _firestore
+      .collection('freelancers')
+      .where('email', isEqualTo: email)
+      .limit(1)
+      .get();
 
-          for (var doc in documents) {
-            var data = doc.data() as Map<String, dynamic>;
-            String classificao = data['classificao'];
-            print(classificao);
-          }
-        } else {
-            QuerySnapshot queryprojects = await _firestore.collection('projects').where('classificao', isEqualTo: tipo).get();
-
-     List<QueryDocumentSnapshot> documents = queryprojects.docs; 
-
-     print(documents);
-     
-     for (var doc in documents) {
-        var data = doc.data() as Map<String, dynamic>;
-        String classificao = data['classificao'];
-        print(classificao);
-     }
-        }
-    
-     
-
-      } catch (e) {
+   if (freelancerSnapshot.docs.isNotEmpty) {
+      // Se o tipo for 'All', busca todos os projetos
+      if (tipo == 'All') {
+        final QuerySnapshot<Map<String, dynamic>> projectsSnapshot =
+            await _firestore.collection('projects').get();
+        final List<Map<String, dynamic>> projects = projectsSnapshot.docs
+            .map((doc) => doc.data())
+            .toList();
         
+        return projects; 
+      }
+      if (tipo == 'Desenvolvimento Web') {
+        final QuerySnapshot<Map<String, dynamic>> projectsSnapshot =
+            await _firestore.collection('projects').get();
+        final List<Map<String, dynamic>> projects = projectsSnapshot.docs
+            .map((doc) => doc.data())
+            .toList();
+        
+        return projects; 
+      }
+      if (tipo == 'Desenvolvimento de Aplicativos') {
+        final QuerySnapshot<Map<String, dynamic>> projectsSnapshot =
+            await _firestore.collection('projects').get();
+        final List<Map<String, dynamic>> projects = projectsSnapshot.docs
+            .map((doc) => doc.data())
+            .toList();
+        
+        return projects; 
+      }
+      if (tipo == 'Banco de Dados') {
+        final QuerySnapshot<Map<String, dynamic>> projectsSnapshot =
+            await _firestore.collection('projects').get();
+        final List<Map<String, dynamic>> projects = projectsSnapshot.docs
+            .map((doc) => doc.data())
+            .toList();
+        
+        return projects; 
+      }
+      if (tipo == 'Desenvolvimento de E-Commerce') {
+        final QuerySnapshot<Map<String, dynamic>> projectsSnapshot =
+            await _firestore.collection('projects').get();
+        final List<Map<String, dynamic>> projects = projectsSnapshot.docs
+            .map((doc) => doc.data())
+            .toList();
+        
+        return projects; 
       }
     }
 
+  // Se não encontrar na coleção de freelancers, tenta buscar na coleção de clientes
+  final clientSnapshot = await _firestore
+      .collection('clientes')
+      .where('email', isEqualTo: email)
+      .limit(1)
+      .get();
+
+  if (clientSnapshot.docs.isNotEmpty) {
+
+  } else {
+    print('Usuário não encontrado.');
+    return null;
+  }
+
+     
+
+      } on FirebaseAuthException catch (e) {
+      throw Exception(e.code);
+    }
+  }
 // ============================================================//
 // ================ENTRADA DO USUARIO E SAIDA==================//
 // ============================================================//
@@ -80,7 +125,7 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<UserCredential> register_users(
-      String email, String password, String name) async {
+      String email, String password, String type) async {
     try {
       await _firebaseAuth.setLanguageCode('en_US');
       UserCredential userCredential =
@@ -92,6 +137,12 @@ class AuthService extends ChangeNotifier {
       _firestore.collection('users').doc(userCredential.user!.uid).set(
         {
           'uid': userCredential.user!.uid,
+          'email': email,
+        },
+      );
+
+      _firestore.collection(type).doc().set(
+         {
           'email': email,
         },
       );
@@ -423,6 +474,20 @@ Future<Map<String, dynamic>?> getinfos(String email) async {
   }
 }
 
+Future<void> saveArea(String email, String area)async {
+    QuerySnapshot<Map<String, dynamic>> getInfosUsers = await _firestore
+      .collection('freelancers')
+      .where('email', isEqualTo: email)
+      .get();
+      Map<String, dynamic> updateinfos = {
+      "area": area,
+    };
+
+          var docFreelancer = getInfosUsers.docs.first; // Pega o primeiro documento
+      await _firestore.collection('freelancers').doc(docFreelancer.id).update(updateinfos);
+    
+}
+
 
 Future<void> saveProfile(String name, String desc, context, String email) async {
   if (name.isNotEmpty && desc.isNotEmpty && email.isNotEmpty) {
@@ -452,6 +517,28 @@ Future<void> saveProfile(String name, String desc, context, String email) async 
   }
 }
 
+ Future<Map<String, dynamic>> getClientInfo(String email) async {
+  QuerySnapshot<Map<String, dynamic>> getInfosUsers = await _firestore
+      .collection('clientes')
+      .where('email', isEqualTo: email)
+      .get();
+
+  if (getInfosUsers.docs.isNotEmpty) {
+    var documento = getInfosUsers.docs.first.data();
+    return {
+      'name': documento['nome'] ?? 'Nome Desconhecido',  // Verificação se o nome é nulo
+      'nota': documento['nota'] ?? [0],                  // Verificação se a nota é nula
+    };
+  }
+
+  return {
+    'name': 'Nome Desconhecido', // Valor padrão se o documento não for encontrado
+    'nota': [0],                 // Valor padrão se a nota não estiver presente
+  };
+}
+
+
+
 Future<bool> _updateProfile(String collection, String email, String name, String desc) async {
   QuerySnapshot<Map<String, dynamic>> getInfosUsers = await _firestore
       .collection(collection)
@@ -473,6 +560,54 @@ Future<bool> _updateProfile(String collection, String email, String name, String
 }
 
 
+Future<void> savePreregister(String desc, String name, List<String> languages, String projects, String email) async {
+  // Cria o mapa de atualização das informações
+  Map<String, dynamic> updateinfos;
+
+  // Procura nas coleções por freelancers e clientes usando o email
+  try {
+    // Procurar na coleção 'freelancers'
+    QuerySnapshot<Map<String, dynamic>> infosFreelancers = await _firestore
+        .collection('freelancers')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (infosFreelancers.docs.isNotEmpty) {
+      updateinfos = {
+    "desc": desc,
+    "nome": name,
+    "linguagens": languages,
+    "nota": [],
+    "projects": projects
+  };
+      var docFreelancer = infosFreelancers.docs.first; // Pega o primeiro documento
+      await _firestore.collection('freelancers').doc(docFreelancer.id).update(updateinfos);
+    } else {
+      // Se não encontrar na coleção 'freelancers', procurar na coleção 'clientes'
+      QuerySnapshot<Map<String, dynamic>> infosClientes = await _firestore
+          .collection('clientes')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (infosClientes.docs.isNotEmpty) {
+        updateinfos = {
+    "desc": desc,
+    "nome": name,
+  };
+        var docCliente = infosClientes.docs.first; 
+        await _firestore.collection('clientes').doc(docCliente.id).update(updateinfos);
+      } else {
+        // Caso não encontre em nenhuma das coleções, pode-se lidar com isso aqui
+        print('Nenhum documento encontrado para o email fornecido.');
+      }
+    }
+  } catch (e) {
+    print('Erro ao salvar pré-registro: $e');
+  }
+}
+
+
+
 
 Future<List<String>> getHab(String area, String type) async {
   try {
@@ -486,7 +621,7 @@ Future<List<String>> getHab(String area, String type) async {
     if (doc.exists) {
       Map<String, dynamic>? data = doc.data();
 
-      // Verifica se o campo 'curses' está presente no documento
+      // Verifica se o campo fornecido por 'type' está presente no documento
       if (data != null && data.containsKey(type)) {
         Map<String, dynamic>? map = data[type];
 
@@ -496,15 +631,17 @@ Future<List<String>> getHab(String area, String type) async {
 
           // Converte o array de dinâmico para lista de strings
           if (arrayTI != null && arrayTI is List) {
-            return List<String>.from(arrayTI);
+            // Filtra apenas strings para garantir consistência
+            List<String> validList = arrayTI.whereType<String>().toList();
+            return validList;
           } else {
-            print('O campo $area não é uma lista válida ou está vazio.');
+            print('O campo "$area" não é uma lista válida ou está vazio.');
           }
         } else {
-          print('Chave "$area" não encontrada em "curses".');
+          print('Chave "$area" não encontrada em "$type".');
         }
       } else {
-        print('Campo "curses" não encontrado no documento.');
+        print('Campo "$type" não encontrado no documento.');
       }
     } else {
       print('Documento com ID "VPyiRaZZB8IyxoxOpotH" não encontrado.');
@@ -517,6 +654,7 @@ Future<List<String>> getHab(String area, String type) async {
     return [];
   }
 }
+
 
 
 
