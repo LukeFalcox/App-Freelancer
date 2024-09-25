@@ -4,6 +4,8 @@ import 'dart:html' as html;
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:app_freelancer/app/pages/clientes/budget.dart';
+import 'package:app_freelancer/app/pages/clientes/filterscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -18,7 +20,8 @@ import 'package:app_freelancer/app/pages/freelancer/home/home_profile/editprofil
 import 'package:app_freelancer/app/pages/homeprincip.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool freeorcli;
+  const ProfileScreen({super.key, required this.freeorcli});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -244,6 +247,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: 'Ajuda',
                       onPress: () {},
                       icon: Ionicons.information,
+                    ),
+                    ProfileMenuWidget(
+                      title: 'Fazer Orçamento',
+                      onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Filterscreen(authService: authService, userEmail: userEmail),));
+                      },
+                      icon: Ionicons.business,
                     ),
                     ProfileMenuWidget(
                       title: 'Sair',

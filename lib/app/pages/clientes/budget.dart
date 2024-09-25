@@ -164,7 +164,7 @@ Future<List<DocumentSnapshot>> _fetchFreelancers(String? type, int valorselect) 
       .where('media', isEqualTo: valorselect) // Filtra por 'media'
       .get();
 
-  return snapshot.docs;
+  return snapshot.docs; 
 }
 
 

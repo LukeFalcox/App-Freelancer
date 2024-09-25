@@ -22,7 +22,7 @@ class AuthService extends ChangeNotifier {
       List projects = [];
       try {
 
-          final freelancerSnapshot = await _firestore
+      final freelancerSnapshot = await _firestore
       .collection('freelancers')
       .where('email', isEqualTo: email)
       .limit(1)
@@ -97,6 +97,43 @@ class AuthService extends ChangeNotifier {
       throw Exception(e.code);
     }
   }
+
+
+  Future<Map<String, dynamic>> verificationTypeUser(String email) async {
+  final freelancerSnapshot = await _firestore
+      .collection('freelancers')
+      .where('email', isEqualTo: email)
+      .limit(1)
+      .get();
+
+  if (freelancerSnapshot.docs.isNotEmpty) {
+    return {
+      'isFreelancer': true,
+      'userId': freelancerSnapshot.docs.first.id,
+      'userName': freelancerSnapshot.docs.first['name']
+    };
+  }
+
+  final clientSnapshot = await _firestore
+      .collection('clientes')
+      .where('email', isEqualTo: email)
+      .limit(1)
+      .get();
+
+  if (clientSnapshot.docs.isNotEmpty) {
+    return {
+      'isFreelancer': false,
+      'userId': clientSnapshot.docs.first.id,
+      'userName': clientSnapshot.docs.first['name']
+    };
+  } else {
+    throw Exception('Usuário não encontrado.');
+  }
+}
+
+
+
+
 // ============================================================//
 // ================ENTRADA DO USUARIO E SAIDA==================//
 // ============================================================//

@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Novos Projetos para você",
+                "Bem vindo novidades para você",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -215,11 +215,11 @@ class _HomeState extends State<Home> {
                                       [0]; // Verificação da nota
 
                                   return UserCard(
-                                    name: name,
-                                    rating: nota,
-                                    classification:
-                                        userInfo['classification'] ?? [],
-                                  );
+                                      name: name,
+                                      rating: nota,
+                                      classification:
+                                          userInfo['classificao'] ?? [],
+                                      userinfo: userInfo);
                                 }
 
                                 return const Text(
@@ -234,7 +234,8 @@ class _HomeState extends State<Home> {
                     return const Center(child: Text('Nenhum dado disponível.'));
                   },
                 ),
-              )
+              ),
+              
             ],
           ),
         ),
@@ -243,68 +244,111 @@ class _HomeState extends State<Home> {
   }
 }
 
-class UserCard extends StatelessWidget {
 
+class UserCard extends StatelessWidget {
   final String name;
   final List<dynamic> rating;
   final List classification;
+  final Map<String, dynamic> userinfo;
 
-  UserCard({
+  const UserCard({
+    super.key,
     required this.name,
     required this.rating,
     required this.classification,
+    required this.userinfo,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      padding: const EdgeInsets.all(10),
-      width: 150, // Define a largura fixa
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.all(8),
+      width: 150, // Reduzi a largura
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withOpacity(0.4),
             spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start, // Alinhamento à esquerda
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: const AssetImage('assets/default_avatar.png')
-                    as ImageProvider, // Verificação se a URL da imagem está vazia
-          ),
-          const SizedBox(height: 10),
-          Text(
-            name.isNotEmpty ? name : 'Nome Desconhecido', // Validação do nome
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-          Wrap(
-            spacing: 8.0,
-            runSpacing: 4.0,
-            children: classification.map((language) {
-              return Chip(
-                label: Text(language),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 5),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              StarBar(rating: rating,size: 14,), // Verificação de rating
+              const CircleAvatar(
+                radius: 10,
+                backgroundImage: AssetImage('assets/default_avatar.png'),
+              ),
+              const SizedBox(width: 5),
+              Expanded( // Para garantir que o nome não ultrapasse o espaço
+                child: Text(
+                  name.isNotEmpty ? name : 'Nome Desconhecido',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
+                  overflow: TextOverflow.ellipsis, // Para não quebrar layout
+                ),
+              ),
+              const SizedBox(width: 5),
+              StarBar(rating: rating, size: 12), // Mantendo o StarBar
             ],
           ),
+          const SizedBox(height: 8),
+          Text(
+            userinfo['titulo'],
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            overflow: TextOverflow.ellipsis, // Para evitar quebrar a linha
+          ),
+          const SizedBox(height: 5),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(107, 255, 255, 255),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Text(
+              "Detalhes: ${userinfo['desc']}",
+              style: const TextStyle(fontSize: 9),
+              maxLines: 2, // Limita o texto a duas linhas
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 4.0,
+            runSpacing: 2.0,
+            children: classification.map((language) {
+              return Chip(
+                label: Text(
+                  language,
+                  style: const TextStyle(
+                    fontSize: 8, // Reduz o tamanho da fonte
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6.0,
+                  vertical: 1.0, // Reduz o padding
+                ),
+                backgroundColor: const Color(0xFFE0E0E0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6.0), // Bordas arredondadas menores
+                ),
+                side: BorderSide(
+                  color: Colors.grey.shade300,
+                  width: 0.8, // Borda mais fina
+                ),
+              );
+            }).toList(),
+          )
         ],
       ),
     );
