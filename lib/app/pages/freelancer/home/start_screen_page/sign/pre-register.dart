@@ -1,8 +1,9 @@
 import 'package:app_freelancer/app/pages/configs/auth_service.dart';
-import 'package:app_freelancer/app/pages/freelancer/home/home.dart';
 import 'package:app_freelancer/app/pages/freelancer/home/home_page.dart';
+import 'package:app_freelancer/app/pages/freelancer/home/home_profile/checkbox.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PreRegister extends StatefulWidget {
   final AuthService authService;
@@ -18,7 +19,7 @@ class _PreRegisterState extends State<PreRegister> {
   final TextEditingController _experiencesController = TextEditingController();
   late FirebaseAuth _auth;
   late User? user;
-  late String userEmail;
+  late String userEmail = "";
   List<String> linguagens = []; // Inicialização da lista de linguagens
   String? dropdownValue;
   List<String> selectedLanguages = [];
@@ -27,12 +28,49 @@ class _PreRegisterState extends State<PreRegister> {
   @override
   void initState() {
     super.initState();
+    _auth = FirebaseAuth.instance;
     _loadLanguages(); // Carregar as linguagens na inicialização
+  }
+
+  Future<List<String>> _optioncheck({
+    required AuthService authService,
+    required String userEmail,
+  }) async {
+    if (userEmail.isNotEmpty) {
+      String? area = await authService.getArea(userEmail);
+      List<String> esp = await authService.getHab(area!, 'curses');
+      return esp;
+    } else {
+      return []; // Retornar lista vazia se o usuário não estiver logado ou email indisponível
+    }
+  }
+
+
+  Future<List<String>> _optioncheckDropdown({
+    required AuthService authService,
+    required String userEmail,
+  }) async {
+    if (userEmail.isNotEmpty) {
+      String? area = await authService.getArea(userEmail);
+      List<String> esp = await authService.getHab(area!, 'habilidades');
+      return esp;
+    } else {
+      return []; // Retornar lista vazia se o usuário não estiver logado ou email indisponível
+    }
   }
 
   // Carregar as linguagens
   Future<void> _loadLanguages() async {
-    List<String> loadedLanguages = await _optioncheck();
+    user = _auth.currentUser;
+    if (user != null) {
+      userEmail = user?.email ?? '';
+    }
+
+    List<String> loadedLanguages = await _optioncheckDropdown(
+      authService: widget.authService,
+      userEmail: userEmail,
+    );
+
     setState(() {
       linguagens = loadedLanguages;
       if (linguagens.isNotEmpty) {
@@ -40,28 +78,6 @@ class _PreRegisterState extends State<PreRegister> {
       }
     });
   }
-
-  Future<List<String>> _optioncheck() async {
-  _auth = FirebaseAuth.instance;
-  user = _auth.currentUser;
-  
-  if (user == null) {
-    // Aqui você pode redirecionar o usuário para a tela de login
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Usuário não autenticado. Faça login novamente.')),
-    );
-    return [];
-  }
-
-  userEmail = user?.email ?? ''; 
-  if (userEmail.isNotEmpty) {
-    String? area = await widget.authService.getArea(userEmail);
-    List<String> esp = await widget.authService.getHab(area!, 'habilidades');
-    return esp;
-  } else {
-    return []; // Retorna lista vazia se o usuário não estiver logado
-  }
-}
 
   void _addLanguage(String language) {
     setState(() {
@@ -100,15 +116,21 @@ class _PreRegisterState extends State<PreRegister> {
 
     setState(() {
       _isSaving = true;
-    }); // Aqui ira salvar as informações
+    }); // Aqui irá salvar as informações
 
     await Future.delayed(const Duration(seconds: 2));
+
+    await widget.authService.savePreregister(
+      _experiencesController.text,
+      _nameController.text,
+      selectedLanguages,
+      _projectsController.text,
+      userEmail,
+    );
 
     setState(() {
       _isSaving = false;
     });
-
-    await widget.authService.savePreregister(_experiencesController.text, _nameController.text, selectedLanguages, _projectsController.text, userEmail);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Dados salvos com sucesso')),
@@ -119,12 +141,13 @@ class _PreRegisterState extends State<PreRegister> {
     _experiencesController.clear();
     selectedLanguages.clear();
 
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage(),));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomePage(),
+      ),
+    );
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +160,7 @@ class _PreRegisterState extends State<PreRegister> {
               colors: [
                 Color.fromARGB(255, 30, 81, 250),
                 Color.fromARGB(255, 15, 70, 253),
-                Color.fromARGB(255, 0, 38, 255)
+                Color.fromARGB(255, 0, 38, 255),
               ],
             ),
           ),
@@ -212,6 +235,35 @@ class _PreRegisterState extends State<PreRegister> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Text(
+                                      "Classificação",
+                                      style: GoogleFonts.robotoMono(fontSize: 20),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    FutureBuilder<List<String>>(
+                                      future: _optioncheck(
+                                        authService: widget.authService,
+                                        userEmail: userEmail,
+                                      ),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const CircularProgressIndicator();
+                                        } else if (snapshot.hasError) {
+                                          return Text('Error: ${snapshot.error}');
+                                        } else if (snapshot.hasData) {
+                                          final items = snapshot.data!;
+                                          return CheckboxWidget(
+                                            items: items,
+                                            authservice: widget.authService,
+                                            email: userEmail,
+                                          );
+                                        } else {
+                                          return const Text('No data available');
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(height: 10),
                                     Row(
                                       children: [
                                         const Text(
@@ -223,7 +275,9 @@ class _PreRegisterState extends State<PreRegister> {
                                           value: dropdownValue,
                                           icon: const Icon(Icons.arrow_downward),
                                           elevation: 16,
-                                          style: const TextStyle(color: Colors.deepPurple),
+                                          style: const TextStyle(
+                                            color: Colors.deepPurple,
+                                          ),
                                           underline: Container(
                                             height: 2,
                                             color: Colors.deepPurpleAccent,
@@ -234,7 +288,8 @@ class _PreRegisterState extends State<PreRegister> {
                                             });
                                             _addLanguage(dropdownValue!);
                                           },
-                                          items: linguagens.map<DropdownMenuItem<String>>((String value) {
+                                          items: linguagens.map<DropdownMenuItem<String>>(
+                                              (String value) {
                                             return DropdownMenuItem<String>(
                                               value: value,
                                               child: Text(value),
@@ -243,6 +298,7 @@ class _PreRegisterState extends State<PreRegister> {
                                         ),
                                       ],
                                     ),
+
                                     const SizedBox(height: 15),
                                     Wrap(
                                       spacing: 8.0,
