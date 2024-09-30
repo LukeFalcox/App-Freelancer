@@ -234,40 +234,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const Divider(),
                     const SizedBox(height: 10),
                     ProfileMenuWidget(
-                      title: 'Configurações',
-                      onPress: () {},
-                      icon: Ionicons.cog,
+            title: 'Configurações',
+            onPress: () {},
+            icon: Ionicons.cog,
+          ),
+          ProfileMenuWidget(
+            title: 'Meus Projetos',
+            onPress: () {},
+            icon: Ionicons.paper_plane,
+          ),
+          ProfileMenuWidget(
+            title: 'Ajuda',
+            onPress: () {},
+            icon: Ionicons.information,
+          ),
+          if (widget.freeorcli)
+            ProfileMenuWidget(
+              title: 'Fazer Orçamento',
+              onPress: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Filterscreen(
+                      authService: authService,
+                      userEmail: userEmail,
                     ),
-                    ProfileMenuWidget(
-                      title: 'Meus Projetos',
-                      onPress: () {},
-                      icon: Ionicons.paper_plane,
-                    ),
-                    ProfileMenuWidget(
-                      title: 'Ajuda',
-                      onPress: () {},
-                      icon: Ionicons.information,
-                    ),
-                    ProfileMenuWidget(
-                      title: 'Fazer Orçamento',
-                      onPress: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Filterscreen(authService: authService, userEmail: userEmail),));
-                      },
-                      icon: Ionicons.business,
-                    ),
-                    ProfileMenuWidget(
-                      title: 'Sair',
-                      onPress: () {
-                        authService.logout(context);
-                      },
-                      icon: Ionicons.backspace_outline,
-                      endIcon: false,
-                      textColor: Colors.red,
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
+              icon: Ionicons.business,
             ),
+          ProfileMenuWidget(
+            title: 'Sair',
+            onPress: () {
+              authService.logout(context);
+            },
+            icon: Ionicons.backspace_outline,
+            endIcon: false,
+            textColor: Colors.red,
+          ),
+                  ]
+                )
+              )
+          )
     );
   }
 }

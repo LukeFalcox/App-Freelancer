@@ -27,7 +27,6 @@ class _CheckboxWidgetState extends State<CheckboxWidget> {
   @override
   void initState() {
     super.initState();
-    // Inicializar o estado dos checkboxes com base nas classificações salvas
     _selectedItems = Map.fromIterable(
       List.generate(widget.items.length, (index) => index),
       key: (item) => item as int,

@@ -98,6 +98,22 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+ Future<List> getfilters(String email) async {
+  // Obtenha a área com base no email
+  String? area = await getArea(email);
+
+  // Consulta Firestore com o filtro where
+  final snapshot = await _firestore
+      .collection('filters')
+      .doc('VPyiRaZZB8IyxoxOpotH').get();
+
+ final categories =  snapshot.data()?['curses'];
+ final list = categories[area];
+ print(list);
+ print(categories);
+  return list;
+}
+
 
   Future<Map<String, dynamic>> verificationTypeUser(String email) async {
   final freelancerSnapshot = await _firestore

@@ -31,13 +31,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    const categories = [
-      "All",
-      "Breakfast",
-      "Lunch",
-      "Dinner",
-    ];
-    String currentCat = "All";
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -110,32 +103,51 @@ class _HomeState extends State<Home> {
               const SizedBox(
                 height: 20,
               ),
-              Row(
-                children: List.generate(
-                  categories.length,
-                  (index) => Container(
-                    decoration: BoxDecoration(
-                      color: currentCat == categories[index]
-                          ? const Color(0xff568A9F)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    margin: const EdgeInsets.only(right: 20),
-                    child: Text(
-                      categories[index],
-                      style: TextStyle(
-                        color: currentCat == categories[index]
-                            ? Colors.white
-                            : Colors.grey.shade400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              FutureBuilder<List<dynamic>>(
+  future: widget.authService.getfilters(userEmail), // Replace with your actual future
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const CircularProgressIndicator(); // Show a loading indicator while waiting
+    } else if (snapshot.hasError) {
+      return Text('Error: ${snapshot.error}'); // Handle errors
+    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+      return const Text('No data available'); // Handle empty data
+    } else {
+      List<dynamic> categories = snapshot.data!;
+      String currentCat = "All";
+      return SingleChildScrollView(
+  scrollDirection: Axis.horizontal,
+  child: Row(
+    children: List.generate(
+      categories.length,
+      (index) => Container(
+        decoration: BoxDecoration(
+          color: currentCat == categories[index]
+              ? const Color(0xff568A9F)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
+        margin: const EdgeInsets.only(right: 20),
+        child: Text(
+          categories[index],
+          style: TextStyle(
+            color: currentCat == categories[index]
+                ? Colors.white
+                : Colors.black,
+          ),
+        ),
+      ),
+    ),
+  ),
+);
+
+    }
+  },
+),
               const SizedBox(
                 height: 20,
               ),
