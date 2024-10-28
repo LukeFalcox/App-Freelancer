@@ -26,12 +26,12 @@ class Activechats extends StatelessWidget {
                             offset: Offset(0, 2),
                           )
                         ]),
-                    // child: ClipRRect(
-                    //   borderRadius: BorderRadius.circular(35),
-                    //   child: Image.asset(
-                    //     "images/avatar.png",
-                    //   ),
-                    // ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(35),
+                      child: Image.asset(
+                        "image/img/user.png",
+                      ),
+                    ),
                   ),
                 ),
             ],

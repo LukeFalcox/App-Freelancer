@@ -1,22 +1,18 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:app_freelancer/app_funcoes/pages/clientes/budget.dart';
+import 'package:app_freelancer/app_funcoes/pages/clientes/createworks.dart';
 import 'package:app_freelancer/app_funcoes/pages/clientes/filterscreen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/projects_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/editprofile.dart';
-import 'package:app_freelancer/app_funcoes/pages/homeprincip.dart';
+import 'ratingwidget.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool freeorcli;
@@ -32,13 +28,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late AuthService authService; // Declare AuthService variable
   late FirebaseAuth _auth;
   late User? user;
-  String? _profileImageUrl;
   late String userEmail;
   late List<dynamic> avaliable;
   bool isLoading =
       true; // Adiciona uma variável para controlar o estado de carregamento
-
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -56,98 +49,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserInfos();
   }
 
-  Future<void> _loadUserInfos() async {
-  try {
-    infos = await authService.getinfos(userEmail);
-    if (infos != null && infos!.isNotEmpty) {
-      name = infos!['nome'] ?? "";
-      avaliable = infos!['nota'] ?? [];
-    }
-  } catch (e) {
-    print("Erro ao carregar informações do usuário: $e");
-  } finally {
-    if (mounted) {
-      setState(() {
-        isLoading = false; // Define como false após o carregamento
-      });
-    }
+  void _updateProfile() {
+    _loadUserInfos(); // Ou qualquer outro método que atualize as informações do perfil
   }
-}
 
-  Future<String?> pickAndUploadImageMobile(String userEmail) async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? file = await _picker.pickImage(source: ImageSource.gallery);
-    if (file != null) {
-      final File fileObj = File(file.path);
-      try {
-        final Uint8List fileBytes = await fileObj.readAsBytes();
-        final ref = FirebaseStorage.instance
-            .ref()
-            .child('images/$userEmail/Usuario/Perfil.jpg');
-        final uploadTask = ref.putData(fileBytes);
-        await uploadTask.whenComplete(() => null);
-        return await ref.getDownloadURL();
-      } catch (e) {
-        print("Erro no upload: $e");
-        return null;
+  Future<void> _loadUserInfos() async {
+    try {
+      infos = await authService.getinfos(userEmail);
+      if (infos != null && infos!.isNotEmpty) {
+        name = infos!['nome'] ?? "";
+        avaliable = infos!['nota'] ?? [];
+      }
+    } catch (e) {
+      print("Erro ao carregar informações do usuário: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
-    return null;
   }
 
-  // Future<String?> pickAndUploadImageWeb(String userEmail) async {
-  //   final uploadInput = html.FileUploadInputElement();
-  //   uploadInput.accept = 'image/*';
-  //   uploadInput.click();
-
-  //   final Completer<String?> completer = Completer<String?>();
-  //   uploadInput.onChange.listen((e) async {
-  //     final files = uploadInput.files;
-  //     if (files != null && files.isNotEmpty) {
-  //       final file = files[0];
-  //       final reader = html.FileReader();
-  //       reader.readAsArrayBuffer(file);
-
-  //       reader.onLoadEnd.listen((_) async {
-  //         final Uint8List fileBytes = reader.result as Uint8List;
-  //         final ref = FirebaseStorage.instance
-  //             .ref()
-  //             .child('images/$userEmail/Usuario/Perfil.jpg');
-  //         try {
-  //           final uploadTask = ref.putData(fileBytes);
-  //           await uploadTask.whenComplete(() => null);
-  //           final imageUrl = await ref.getDownloadURL();
-  //           completer.complete(imageUrl);
-  //         } catch (e) {
-  //           print("Erro no upload: $e");
-  //           completer.complete(null);
-  //         }
-  //       });
-
-  //       reader.onError.listen((e) {
-  //         print("Erro no upload: $e");
-  //         completer.complete(null);
-  //       });
-  //     } else {
-  //       completer.complete(null);
-  //     }
-  //   });
-
-  //   return completer.future;
-  // }
-
-  Future<void> pickAndUploadImage(String userEmail) async {
-    String? imageUrl;
-    if (kIsWeb) {
-      // imageUrl = await pickAndUploadImageWeb(userEmail);
-    } else {
-      imageUrl = await pickAndUploadImageMobile(userEmail);
-    }
-
-    if (imageUrl != null) {
-      setState(() {
-        _profileImageUrl = imageUrl;
-      });
+  Future<String> getImageUrl(String imagePath) async {
+    try {
+      Reference ref = FirebaseStorage.instance.ref(imagePath);
+      String downloadURL = await ref.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('Erro ao obter a URL da imagem: $e');
+      return '';
     }
   }
 
@@ -155,131 +86,139 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     var isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-         automaticallyImplyLeading: false,
-        title: const Text(
-          "Perfil",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(isDark ? Ionicons.sunny : Ionicons.moon),
+        appBar: AppBar(
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          title: const Text(
+            "Perfil",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
           ),
-        ],
-      ),
-      body: isLoading
-          ? Center(
-              child:
-                  CircularProgressIndicator()) // Exibe o indicador de progresso enquanto carrega
-          : SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () => pickAndUploadImage(userEmail),
-                      child: SizedBox(
-                        width: 120,
-                        height: 120,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: _profileImageUrl != null
-                              ? Image.network(_profileImageUrl!)
-                              : const Image(
-                                  image: AssetImage("image/img/hacker.png"),
-                                ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      name,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                    Text(
-                      userEmail,
-                      style:
-                          TextStyle(fontWeight: FontWeight.w300, fontSize: 16),
-                    ),
-                    const SizedBox(height: 5),
-                    StarBar(rating: avaliable),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: 200,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Editprofile(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          side: BorderSide.none,
-                          shape: const StadiumBorder(),
-                        ),
-                        child: const Text(
-                          "Edit Profile",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    const Divider(),
-                    const SizedBox(height: 10),
-                    ProfileMenuWidget(
-            title: 'Configurações',
-            onPress: () {},
-            icon: Ionicons.cog,
-          ),
-          ProfileMenuWidget(
-            title: 'Meus Projetos',
-            onPress: () {},
-            icon: Ionicons.paper_plane,
-          ),
-          ProfileMenuWidget(
-            title: 'Ajuda',
-            onPress: () {},
-            icon: Ionicons.information,
-          ),
-          if (!widget.freeorcli)
-            ProfileMenuWidget(
-              title: 'Fazer Orçamento',
-              onPress: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Filterscreen(
-                      authService: authService,
-                      userEmail: userEmail,
-                    ),
-                  ),
-                );
-              },
-              icon: Ionicons.business,
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(isDark ? Ionicons.sunny : Ionicons.moon),
             ),
-          ProfileMenuWidget(
-            title: 'Sair',
-            onPress: () {
-              authService.logout(context);
-            },
-            icon: Ionicons.backspace_outline,
-            endIcon: false,
-            textColor: Colors.red,
-          ),
-                  ]
-                )
-              )
-          )
-    );
+          ],
+        ),
+        body: isLoading
+            ? const Center(
+                child:
+                    CircularProgressIndicator()) // Exibe o indicador de progresso enquanto carrega
+            : SingleChildScrollView(
+                child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(children: [
+                     ClipRRect(
+  borderRadius: BorderRadius.circular(100),
+  child: Image.asset(
+    'image/img/user.png',
+     height: 100,
+    fit: BoxFit.cover, // Isso ajusta a imagem de acordo com o widget pai
+  ),
+),
+
+                      const SizedBox(height: 10),
+                      Text(
+                        name,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Text(
+                        userEmail,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w300, fontSize: 16),
+                      ),
+                      const SizedBox(height: 5),
+                      StarBar(rating: avaliable),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: 200,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Editprofile(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            side: BorderSide.none,
+                            shape: const StadiumBorder(),
+                          ),
+                          child: const Text(
+                            "Edit Profile",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      const Divider(),
+                      const SizedBox(height: 10),
+                      if (!widget.freeorcli)
+                      ProfileMenuWidget(
+                        title: 'Criar Projetos',
+                        onPress: () {  
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>  CriarProjetoScreen(authService: authService,useremail: userEmail,)
+                              ),
+                            );
+                        },
+                        icon: Ionicons.paper_plane,
+                      ),
+                      
+                          ProfileMenuWidget(
+                        title: 'Meus Projetos',
+                        onPress: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProjectsScreen(authService:authService ,freeorcli:widget.freeorcli ,useremail:userEmail ,)
+                              ),
+                            );
+                          
+                        },
+                        icon: Ionicons.paper_plane,
+                      ),
+                      
+                      
+                      ProfileMenuWidget(
+                        title: 'Ajuda',
+                        onPress: () {},
+                        icon: Ionicons.information,
+                      ),
+                      if (!widget.freeorcli)
+                        ProfileMenuWidget(
+                          title: 'Fazer Orçamento',
+                          onPress: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Filterscreen(
+                                  authService: authService,
+                                  userEmail: userEmail,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: Ionicons.business,
+                        ),
+                      ProfileMenuWidget(
+                        title: 'Sair',
+                        onPress: () {
+                          authService.logout(context);
+                        },
+                        icon: Ionicons.backspace_outline,
+                        endIcon: false,
+                        textColor: Colors.red,
+                      ),
+                    ]))));
   }
 }
 
@@ -342,7 +281,7 @@ class StarBar extends StatelessWidget {
   final List<dynamic> rating;
   final double size;
 
-  StarBar({
+  const StarBar({
     super.key,
     required this.rating,
     this.size = 24,
@@ -350,42 +289,42 @@ class StarBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _starList = [];
-    
+    List<Widget> starList = [];
+
     // Verifica se há avaliações
     if (rating.isEmpty) {
       // Caso não haja avaliações, adiciona estrelas desmarcadas (zeradas)
       for (int i = 0; i < 5; i++) {
-        _starList.add(Icon(
+        starList.add(Icon(
           Icons.star,
           color: Colors.grey,
           size: size,
         ));
       }
       // Não exibe a nota, já que não há avaliações
-      _starList.add(SizedBox(width: 3));
-      _starList.add(Text('(0)'));
+      starList.add(const SizedBox(width: 3));
+      starList.add(const Text('(0)'));
     } else {
       // Calcula a soma das avaliações
       double avaliableSum = 0;
       for (var i in rating) {
-        avaliableSum += i;
+        avaliableSum += double.parse(i);
       }
 
       avaliableSum = avaliableSum / rating.length;
-      int realNumber = avaliableSum.floor();
+      int realNumber = avaliableSum.round();
       double partNumber = avaliableSum - realNumber;
 
       // Adiciona estrelas completas, parciais ou desmarcadas conforme a avaliação
       for (int i = 0; i < 5; i++) {
         if (i < realNumber) {
-          _starList.add(Icon(
+          starList.add(Icon(
             Icons.star,
             color: Theme.of(context).primaryColor,
             size: size,
           ));
         } else if (i == realNumber && partNumber > 0) {
-          _starList.add(SizedBox(
+          starList.add(SizedBox(
             height: size,
             width: size,
             child: Stack(
@@ -408,7 +347,7 @@ class StarBar extends StatelessWidget {
             ),
           ));
         } else {
-          _starList.add(Icon(
+          starList.add(Icon(
             Icons.star,
             color: Colors.grey,
             size: size,
@@ -416,13 +355,13 @@ class StarBar extends StatelessWidget {
         }
       }
 
-      _starList.add(SizedBox(width: 3));
-      _starList.add(Text('(${rating.length})'));
+      starList.add(const SizedBox(width: 3));
+      starList.add(Text('(${realNumber})'));
     }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: _starList,
+      children: starList,
     );
   }
 }

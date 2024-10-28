@@ -1,6 +1,7 @@
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/login_page.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/pre-register.dart';
+import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/preregistercliente.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/proffisional.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,7 @@ class _RegisterState extends State<Register> {
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      await authService.register_users(_emailController.text, _passwordController.text, type);
+      
 
       setState(() {
         isLoading = false;
@@ -63,16 +64,14 @@ class _RegisterState extends State<Register> {
 
       // Se for freelancer, navega para a tela Profissional
       if (type == 'freelancers') {
-        await authService.savePreregister('default','default',[],'default','default',0,'default');
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Profissional(authService: authService)),
+          MaterialPageRoute(builder: (context) => Profissional(authService, _emailController.text, _passwordController.text)),
         );
       } else {
-        // Se for cliente, navega para a tela PreRegister
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => PreRegister(authService: authService)),
+          MaterialPageRoute(builder: (context) => PreRegisterCliente(email: _emailController.text,password:  _passwordController.text, authService: authService,)),
         );
       }
     } catch (e) {
@@ -194,11 +193,11 @@ class _RegisterState extends State<Register> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 25),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
                               elevation: 5,
                             ),
                             child: const Text(
-                              "Cadastrar como Freelancer",
+                              "Freelancer",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -213,11 +212,11 @@ class _RegisterState extends State<Register> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 25),
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
                               elevation: 5,
                             ),
                             child: const Text(
-                              "Cadastrar como Cliente",
+                              "Cliente",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

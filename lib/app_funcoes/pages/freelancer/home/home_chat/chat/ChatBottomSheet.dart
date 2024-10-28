@@ -46,7 +46,7 @@ void sendMessage() async {
             child: Icon(
               Icons.add,
               color: Color(0xFF113953),
-              size: 30,
+              size: 25,
             ),
             ),
 
@@ -55,7 +55,7 @@ void sendMessage() async {
             child: Icon(
               Icons.emoji_emotions_outlined,
               color: Color(0xFF113953),
-              size: 30,
+              size: 25,
             ),
             ),
             Padding(padding: const EdgeInsets.only(left: 10),
@@ -73,14 +73,13 @@ void sendMessage() async {
             ),
         const Spacer(),
          Padding(
-          padding: const EdgeInsets.only(right: 10),
+          padding: const EdgeInsets.only(right: 12),
         child:  IconButton(
           onPressed: sendMessage,
           icon: const Icon(
-            
             Icons.send,
             color: Color(0xFF113953),
-            size: 30,
+            size: 25,
           ),
         ),
         ),

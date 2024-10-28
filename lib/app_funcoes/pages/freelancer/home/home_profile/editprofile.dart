@@ -100,36 +100,52 @@ class _EditprofileState extends State<Editprofile> {
               const SizedBox(height: 20),
               Text("Classificação", style: GoogleFonts.robotoMono(fontSize: 20)),
               const SizedBox(height: 5),
-              FutureBuilder<List<String>>(
-              future: _optioncheck(authService: authService, userEmail: userEmail),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else if (snapshot.hasData) {
-                  final items = snapshot.data!;
-                  final selectedItems = infos?['classificacao'] ?? []; // Classificações salvas
-                  return CheckboxWidget(
-                    items: items, 
-                    authservice: authService, 
-                    email: userEmail, 
-                    initialSelectedItems: selectedItems
-                  );
-                } else {
-                  return const Text('No data available');
-                }
-              },
-            ),
+             FutureBuilder<List<String>>(
+  future: _optioncheck(authService: authService, userEmail: userEmail),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const CircularProgressIndicator();
+    } else if (snapshot.hasError) {
+      return Text('Error: ${snapshot.error}');
+    } else if (snapshot.hasData) {
+      final items = snapshot.data!;
+      final selectedItems = infos?['classificacao'] ?? []; // Classificações salvas
+      return CheckboxWidget(
+        items: items,
+        authservice: authService,
+        email: userEmail,
+        initialSelectedItems: selectedItems,
+        onSelectionChanged: (selected) {
+          // Atualize a lista de classificações selecionadas
+          infos?['classificacao'] = selected;
+        },
+      );
+    } else {
+      return const Text('No data available');
+    }
+  },
+),
+
               const SizedBox(height: 10),
               SizedBox(
                 width: 200,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // Call the save function when the button is pressed
-                    await authService.saveProfile(controllerName.text, controllerDesc.text, context,userEmail );
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
-                  },
+  // Call the save function when the button is pressed
+  await authService.saveProfile(
+    controllerName.text,
+    controllerDesc.text,
+    context,
+    userEmail,
+    infos?['classificacao'], // Passe as classificações atualizadas
+  );
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => HomePage(),
+    ),
+  );
+},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     side: BorderSide.none,

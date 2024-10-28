@@ -215,13 +215,13 @@ class _HomePrincipState extends State<HomePrincip> {
                                       child: const Text(
                                         "Cadastre-se Agora",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white),
                                       ),
                                     ),
                                     const SizedBox(
-                                      width: 20,
+                                      width: 10,
                                     ),
                                     ElevatedButton(
                                       onPressed: () {
@@ -246,7 +246,7 @@ class _HomePrincipState extends State<HomePrincip> {
                                       child: const Text(
                                         "Faça o Login Agora",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 12,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white),
                                       ),
@@ -259,13 +259,3 @@ class _HomePrincipState extends State<HomePrincip> {
                 ]))));
   }
 }
-// const SizedBox(height: 30),
-//                 Text(
-//                   "Depoimentos",
-//                   style: TextStyle(
-//                       fontWeight: FontWeight.bold,
-//                       fontSize: 22,
-//                       color: Colors.blue.shade700),
-//                   textAlign: TextAlign.center,
-//                 ),
-//                 const SizedBox(height: 10),

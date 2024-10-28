@@ -1,6 +1,7 @@
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_page.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/checkbox.dart';
+import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +9,10 @@ import 'package:intl/intl.dart';
 
 class PreRegister extends StatefulWidget {
   final AuthService authService;
-  const PreRegister({super.key, required this.authService});
+  final String? email;
+  final String? area;
+  final String? password;
+  const PreRegister({super.key, required this.authService, this.email, this.password, this.area});
 
   @override
   State<PreRegister> createState() => _PreRegisterState();
@@ -20,8 +24,6 @@ class _PreRegisterState extends State<PreRegister> {
   final TextEditingController _experiencesController = TextEditingController();
   final TextEditingController _averageValueController = TextEditingController();
   late FirebaseAuth _auth;
-  late User? user;
-  late String userEmail = "";
   List<String> linguagens = [];
   List<String> classificationItems = [];
   String? dropdownValue;
@@ -42,11 +44,9 @@ class _PreRegisterState extends State<PreRegister> {
 
   Future<List<String>> _optioncheck({
     required AuthService authService,
-    required String userEmail,
   }) async {
-    if (userEmail.isNotEmpty) {
-      String? area = await authService.getArea(userEmail);
-      List<String> esp = await authService.getHab(area!, 'curses');
+    if (widget.email != null) {
+      List<String> esp = await authService.getHab(widget.area!, 'curses');
       return esp;
     } else {
       return [];
@@ -55,11 +55,9 @@ class _PreRegisterState extends State<PreRegister> {
 
   Future<List<String>> _optioncheckDropdown({
     required AuthService authService,
-    required String userEmail,
   }) async {
-    if (userEmail.isNotEmpty) {
-      String? area = await authService.getArea(userEmail);
-      List<String> esp = await authService.getHab(area!, 'habilidades');
+    if (widget.email != null) {
+      List<String> esp = await authService.getHab(widget.area!, 'habilidades');
       return esp;
     } else {
       return [];
@@ -67,14 +65,8 @@ class _PreRegisterState extends State<PreRegister> {
   }
 
   Future<void> _loadLanguages() async {
-    user = _auth.currentUser;
-    if (user != null) {
-      userEmail = user?.email ?? '';
-    }
-
     List<String> loadedLanguages = await _optioncheckDropdown(
       authService: widget.authService,
-      userEmail: userEmail,
     );
 
     setState(() {
@@ -86,10 +78,9 @@ class _PreRegisterState extends State<PreRegister> {
   }
 
   Future<void> _loadClassifications() async {
-    if (userEmail.isNotEmpty) {
+    if (widget.email != null) {
       final items = await _optioncheck(
         authService: widget.authService,
-        userEmail: userEmail,
       );
       setState(() {
         classificationItems = items;
@@ -111,6 +102,15 @@ class _PreRegisterState extends State<PreRegister> {
     });
   }
 
+  // Definição do método _onSelectedItemsChanged
+  void _onSelectedItemsChanged(List<String> updatedSelectedItems) {
+    setState(() {
+      selectedItems = updatedSelectedItems;
+    });
+  }
+
+  
+
   bool _isFormValid() {
     if (_nameController.text.isEmpty ||
         _projectsController.text.isEmpty ||
@@ -131,46 +131,85 @@ class _PreRegisterState extends State<PreRegister> {
   }
 
   Future<void> _saveForm() async {
-    if (!_isFormValid()) return;
+  if (!_isFormValid()) return;
 
-    setState(() {
-      _isSaving = true;
-    });
+  if (selectedItems.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, selecione ao menos uma classificação.')),
+    );
+    return;
+  }
 
-    await Future.delayed(const Duration(seconds: 1));
+  if (selectedLanguages.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Por favor, selecione ao menos uma linguagem.')),
+    );
+    return;
+  }
 
+  setState(() {
+    _isSaving = true;
+  });
+
+  try {
+    await Future.delayed(const Duration(seconds: 2));
+    await widget.authService.register_users(widget.email!, widget.password!, 'freelancers');
+    await Future.delayed(const Duration(seconds: 2));
+    // Salvar o pré-registro
     await widget.authService.savePreregister(
-        _experiencesController.text,
-        _nameController.text,
-        selectedLanguages,
-        _projectsController.text,
-        userEmail,
-        datalimite,
-        _averageValueController.text);
+      _experiencesController.text,
+      _nameController.text,
+      selectedLanguages,
+      _projectsController.text,
+      widget.email,
+      selectedItems,
+      widget.area,
+      _averageValueController.text,
+    );
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       _isSaving = false;
     });
-
+    await Future.delayed(const Duration(seconds: 2));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Dados salvos com sucesso')),
     );
 
+    // Limpar campos e redirecionar
     _nameController.clear();
     _projectsController.clear();
     _experiencesController.clear();
     selectedLanguages.clear();
+    selectedItems.clear();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const HomePage(),
+        builder: (context) => const PageLogin(),
       ),
     );
+  } catch (e) {
+    setState(() {
+      _isSaving = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Erro ao salvar dados: $e')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+     appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Ícone de seta
+          onPressed: () {
+            Navigator.pop(context); // Volta para a tela anterior
+          },
+        ),
+        backgroundColor: const Color.fromARGB(255, 30, 81, 250), // Cor do AppBar
+      ),
       body: SingleChildScrollView(
         child: Container(
           decoration: const BoxDecoration(
@@ -248,7 +287,8 @@ class _PreRegisterState extends State<PreRegister> {
                               hint: "Valor médio por projeto",
                             ),
                             Padding(
-                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 10),
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                  horizontal: 10),
                               child: Row(
                                 children: [
                                   Expanded(
@@ -282,7 +322,9 @@ class _PreRegisterState extends State<PreRegister> {
                                         if (pickedDate != null) {
                                           setState(() {
                                             _dataInicio = pickedDate;
-                                            datalimite = _dataFim?.difference(_dataInicio!).inDays;
+                                            datalimite = _dataFim
+                                                ?.difference(_dataInicio!)
+                                                .inDays;
                                           });
                                         }
                                       },
@@ -343,8 +385,8 @@ class _PreRegisterState extends State<PreRegister> {
                               child: CheckboxWidget(
                                 items: classificationItems,
                                 authservice: widget.authService,
-                                email: userEmail,
-                                initialSelectedItems: selectedItems,
+                                email: widget.email!,
+                                initialSelectedItems: selectedItems, onSelectionChanged: _onSelectedItemsChanged,
                               ),
                             ),
                             const SizedBox(height: 15),
@@ -354,9 +396,11 @@ class _PreRegisterState extends State<PreRegister> {
                               value: dropdownValue,
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  dropdownValue = newValue!;
+                                  dropdownValue = newValue;
                                 });
-                                _addLanguage(dropdownValue!);
+                                if (dropdownValue != null) {
+                                  _addLanguage(dropdownValue!);
+                                }
                               },
                               items: linguagens.map<DropdownMenuItem<String>>(
                                   (String value) {
@@ -366,7 +410,7 @@ class _PreRegisterState extends State<PreRegister> {
                                 );
                               }).toList(),
                               decoration: InputDecoration(
-                                labelText: 'Linguagens conhecidas',
+                                labelText: 'Habilidades',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),

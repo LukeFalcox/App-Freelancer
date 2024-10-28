@@ -5,13 +5,13 @@ import 'package:app_freelancer/app_funcoes/pages/freelancer/home/payments/consts
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+// import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    Stripe.publishableKey = stripePublishableKey;
+    // Stripe.publishableKey = stripePublishableKey;
 
 
   await Firebase.initializeApp(

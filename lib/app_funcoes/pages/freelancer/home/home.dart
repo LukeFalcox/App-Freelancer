@@ -1,10 +1,12 @@
-import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_chat/chat/ChatPage.dart';
-import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/profile.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
 import 'package:ionicons/ionicons.dart';
+
+import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
+import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_chat/chat/ChatPage.dart';
+import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/profile.dart';
 
 class Home extends StatefulWidget {
   final AuthService authService;
@@ -25,9 +27,11 @@ class _HomeState extends State<Home> {
   User? user;
   late String userEmail;
   String? valueFilter;
+  String selectedArea = 'Tecnologia'; // Valor padrão do dropdown
   List<Map<String, dynamic>> userInfoList = []; // Lista de projetos
   List<String> freelancerProjects = []; // Lista de projetos já atribuídos ao freelancer
   List<String> freelancerContacts = []; // Lista de contatos de freelancers
+  final List<String> areas = ['Tecnologia', 'Edificação', 'Administração'];
 
   @override
   void initState() {
@@ -44,11 +48,13 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> loadProjectsOrFreelancers() async {
-    final data = await widget.authService.getprojectsorfreelancers(valueFilter ?? "All", userEmail);
+    final data = await widget.authService.getprojectsorfreelancers(valueFilter ?? "All", userEmail, selectedArea);
     setState(() {
       userInfoList = data ?? [];
     });
   }
+
+  
 
   // Carregar os projetos atribuídos ao freelancer diretamente do Firestore
   Future<void> loadFreelancerProjects() async {
@@ -175,41 +181,65 @@ class _HomeState extends State<Home> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 15),
-              GestureDetector(
-                onTap: () {
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        valueFilter = 'All';
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20), // Adiciona padding
+                      decoration: BoxDecoration(
+                        color: valueFilter == 'All'
+                            ? const Color(0xff568A9F)
+                            : Colors.transparent, // Muda a cor de fundo
+                        borderRadius:
+                            BorderRadius.circular(30), // Bordas arredondadas
+                        border: Border.all(
+                          color: const Color(0xff568A9F), // Cor da borda
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        'Ver Tudo',
+                        style: TextStyle(
+                          color: valueFilter == 'All'
+                              ? Colors.white
+                              : const Color(0xff568A9F), // Muda a cor do texto
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 20,),
+
+                   DropdownButton<String>(
+                value: selectedArea,
+                onChanged: (String? newValue) {
                   setState(() {
-                    valueFilter = null;
+                    selectedArea = newValue!;
+                    loadProjectsOrFreelancers(); // Recarrega os projetos com o novo filtro
                   });
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 20), // Adiciona padding
-                  decoration: BoxDecoration(
-                    color: valueFilter == null
-                        ? const Color(0xff568A9F)
-                        : Colors.transparent, // Muda a cor de fundo
-                    borderRadius:
-                        BorderRadius.circular(30), // Bordas arredondadas
-                    border: Border.all(
-                      color: const Color(0xff568A9F), // Cor da borda
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Text(
-                    'Ver Tudo',
-                    style: TextStyle(
-                      color: valueFilter == null
-                          ? Colors.white
-                          : const Color(0xff568A9F), // Muda a cor do texto
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                items: areas.map<DropdownMenuItem<String>>((String area) {
+                  return DropdownMenuItem<String>(
+                    value: area,
+                    child: Text(area),
+                  );
+                }).toList(),
+              ),
+
+                  
+                ],
               ),
               const SizedBox(height: 25),
               FutureBuilder<List<dynamic>>(
-                future: widget.authService.getfilters(userEmail),
+                future: widget.authService.getfileterhome(userEmail,selectedArea),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -263,7 +293,7 @@ class _HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    "Projetos",
+                    "Para você",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   TextButton(onPressed: () {}, child: const Text("Ver mais")),
@@ -272,89 +302,85 @@ class _HomeState extends State<Home> {
               const SizedBox(height: 20),
               SingleChildScrollView(
                 child: FutureBuilder<List<Map<String, dynamic>>?>(
-          future: widget.authService.getprojectsorfreelancers(
-              valueFilter ?? "All", userEmail),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return const Center(
-                  child: Text('Erro ao carregar informações.'));
-            }
-            if (snapshot.hasData) {
-              final List<Map<String, dynamic>>? userInfoList =
-                  snapshot.data;
-              if (userInfoList == null || userInfoList.isEmpty) {
-                return const Center(
-                    child: Text('Nenhum projeto encontrado.'));
-              }
+                  future: widget.authService.getprojectsorfreelancers(
+                      valueFilter!, userEmail,selectedArea), // Usa o selectedArea como filtro
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return const Center(child: Text('Erro ao carregar informações.'));
+                    }
+                    if (snapshot.hasData) {
+                      final List<Map<String, dynamic>>? userInfoList = snapshot.data;
+                      if (userInfoList == null || userInfoList.isEmpty) {
+                        return const Center(child: Text('Nenhum projeto encontrado.'));
+                      }
 
-              return SizedBox(
-                height: 250,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: userInfoList.length,
-                  itemBuilder: (context, index) {
-  final userInfo = userInfoList[index];
-  final projectId = userInfo['id'] ; 
-  final emailCli = userInfo['emailcli'];
+                      return SizedBox(
+                        height: 250,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: userInfoList.length,
+                          itemBuilder: (context, index) {
+                            final userInfo = userInfoList[index];
+                            final projectId = userInfo['id'];
+                            final emailCli = userInfo['emailcli'];
 
-  // Verificar se o projeto já foi atribuído ao freelancer
-  if (widget.freeorcli) {
-     if (isProjectAlreadyAssigned(projectId)) {
-    return Container(); // Retorna um Container vazio se já estiver atribuído
-  }
-  } else {
-    if (isFreelancerAlreadyAssigned(userInfo['email'])) {
-    return Container(); 
-  }
-  }
- 
+                            // Verificar se o projeto já foi atribuído ao freelancer
+                            if (widget.freeorcli) {
+                              if (isProjectAlreadyAssigned(projectId)) {
+                                return Container(); // Retorna um Container vazio se já estiver atribuído
+                              }
+                            } else {
+                              if (isFreelancerAlreadyAssigned(userInfo['email'])) {
+                                return Container(); 
+                              }
+                            }
 
-  if (widget.freeorcli) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: widget.authService.getClientInfo(emailCli),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return const Center(child: Text('Erro ao carregar informações.'));
-        }
-        if (snapshot.hasData && snapshot.data != null) {
-          final clientData = snapshot.data!;
-          final name = clientData['name'] ?? 'Nome Desconhecido';
-          final nota = clientData['nota'] ?? [0];
-          return UserCard(
-            name: name,
-            rating: nota,
-            classification: userInfo['classificao'] ?? [],
-            authService: widget.authService,
-            userinfo: userInfo,
-            useremail: userEmail,
-            freeorcli: widget.freeorcli,
-          );
-        }
-        return const Text('Informações não disponíveis.');
-      },
-    );
-  } else {
-    return UserCard(
-      name: userInfo['nome'] ?? 'Nome Desconhecido',
-      rating: userInfo['nota'] ?? [0],
-      classification: userInfo['classificao'] ?? [],
-      userinfo: userInfo,
-      useremail: userEmail,
-      authService: widget.authService,
-      freeorcli: widget.freeorcli,
-    );
-  }
-},
-                )
-              );
-            }
-            return const Center(child: Text('Nenhum projeto encontrado.'));
+                            if (widget.freeorcli) {
+                              return FutureBuilder<Map<String, dynamic>>(
+                                future: widget.authService.getClientInfo(emailCli),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const Center(child: CircularProgressIndicator());
+                                  }
+                                  if (snapshot.hasError) {
+                                    return const Center(child: Text('Erro ao carregar informações.'));
+                                  }
+                                  if (snapshot.hasData && snapshot.data != null) {
+                                    final clientData = snapshot.data!;
+                                    final name = clientData['name'] ?? 'Nome Desconhecido';
+                                    final nota = clientData['nota'] ?? ["0"];
+                                    return UserCard(
+                                      name: name,
+                                      rating: nota,
+                                      classification: userInfo['classificao'] ?? [],
+                                      authService: widget.authService,
+                                      userinfo: userInfo,
+                                      useremail: userEmail,
+                                      freeorcli: widget.freeorcli,
+                                    );
+                                  }
+                                  return const Text('Informações não disponíveis.');
+                                },
+                              );
+                            } else {
+                              return UserCard(
+                                name: userInfo['nome'] ?? 'Nome Desconhecido',
+                                rating: userInfo['nota'] ?? ["0"],
+                                classification: userInfo['classificacao'] ?? [],
+                                userinfo: userInfo,
+                                useremail: userEmail,
+                                authService: widget.authService,
+                                freeorcli: widget.freeorcli,
+                              );
+                            }
+                          },
+                        ),
+                      );
+                    }
+                    return const Center(child: Text('Nenhum projeto encontrado.'));
                   },
                 ),
               ),
@@ -366,7 +392,7 @@ class _HomeState extends State<Home> {
   }
 }
 
-class UserCard extends StatelessWidget {
+class UserCard extends StatefulWidget {
   final String name;
   final String useremail;
   final List<dynamic> rating;
@@ -376,16 +402,21 @@ class UserCard extends StatelessWidget {
   final bool freeorcli;
 
   const UserCard({
-    super.key,
+    Key? key,
     required this.name,
+    required this.useremail,
     required this.rating,
     required this.classification,
     required this.userinfo,
+    required this.authService,
     required this.freeorcli,
-    required this.authService, 
-    required this.useremail,
-  });
+  }) : super(key: key);
 
+  @override
+  State<UserCard> createState() => _UserCardState();
+}
+
+class _UserCardState extends State<UserCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -404,9 +435,10 @@ class UserCard extends StatelessWidget {
           ),
         ],
       ),
-      child: freeorcli ? _buildClientProjectCard() : _buildFreelancerCard(context),
+      child: widget.freeorcli ? _buildClientProjectCard() : _buildFreelancerCard(context),
     );
   }
+
 Widget _buildFreelancerCard(BuildContext context) {
   return Padding(
     padding: const EdgeInsets.all(4),
@@ -419,48 +451,55 @@ Widget _buildFreelancerCard(BuildContext context) {
               children: [
                 const CircleAvatar(
                   radius: 10,
-                  backgroundImage: AssetImage('assets/default_avatar.png'),
+                  backgroundImage: AssetImage('images/img/user.png'),
                 ),
                 const SizedBox(width: 5),
-                Expanded(
-                  child: Text(
-                    name.isNotEmpty ? name : 'Nome Desconhecido',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                 Expanded(
+              child: Text(
+                widget.name.isNotEmpty ? widget.name : 'Nome Desconhecido',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
                 ),
-                const SizedBox(width: 5),
-                StarBar(rating: rating, size: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
               ],
             ),
+           
+            const SizedBox(height: 5),
+            StarBar(rating: widget.rating, size: 12),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               "Especialidades",
-              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 5),
             Wrap(
               spacing: 4.0,
               runSpacing: 2.0,
               children: List.generate(
-                classification.length,
-                (index) => Chip(label: Text(classification[index])),
+                widget.classification.length,
+                (index) => Text("- ${widget.classification[index]}", style: const TextStyle(fontSize: 10),),
               ),
             ),
           ],
         ),
-        // Botão posicionado no canto inferior direito
+        
         Positioned(
           bottom: 8, // Ajuste a distância do fundo conforme necessário
           right: 8,  // Ajuste a distância da direita conforme necessário
           child: ElevatedButton(
             onPressed: () async{
-             String chatRoomId = await authService.createChatrooms(useremail, userinfo['email']);
-             String? receiverUserID = await authService.receiverUserID(useremail, userinfo['email'],freeorcli);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChatPageNew(receiverUserID: receiverUserID!, chatRoomId: chatRoomId, authService: authService, email: useremail),));
+              String? receiverUserID ;
+            String? chatvery = await widget.authService.getChatRoomId(widget.useremail, widget.userinfo['email']);
+            if (chatvery == null) {
+              String chatRoomId = await widget.authService.createChatrooms(widget.userinfo['email'],widget.useremail);
+              receiverUserID = await widget.authService.receiverUserID(widget.useremail, widget.userinfo['email'],widget.freeorcli,chatRoomId);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPageNew(receiverUserID: receiverUserID!, chatRoomId: chatRoomId, authService: widget.authService, email: widget.userinfo['email']),));
+            }
+            receiverUserID = await widget.authService.receiverUserID(widget.useremail, widget.userinfo['email'],widget.freeorcli,chatvery!);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPageNew(receiverUserID: receiverUserID!, chatRoomId: chatvery, authService: widget.authService, email: widget.userinfo['email']),));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 30, 81, 250),
@@ -484,7 +523,6 @@ Widget _buildFreelancerCard(BuildContext context) {
   );
 }
 
-
   Widget _buildClientProjectCard() {
     return Padding(
       padding: const EdgeInsets.all(4),
@@ -493,30 +531,91 @@ Widget _buildFreelancerCard(BuildContext context) {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+              children: [
+                const CircleAvatar(
+                  radius: 10,
+                  backgroundImage: AssetImage('assets/default_avatar.png'),
+                ),
+                const SizedBox(width: 5),
+                 Expanded(
+              child: Text(
+                widget.name.isNotEmpty ? widget.name : 'Nome Desconhecido',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+              ],
+            ),
+           
+            const SizedBox(height: 5),
+            StarBar(rating: widget.rating, size: 12),
               Text(
-                userinfo['titulo'] ?? 'Título Desconhecido',
+                "Titulo: ${widget.userinfo['titulo']}" ?? 'Título Desconhecido',
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
               const SizedBox(height: 4),
               Text(
-                userinfo['desc'] ?? 'Descrição não disponível',
+                "Desc: ${widget.userinfo['desc']}" ?? 'Descrição não disponível',
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 10),
               ),
-              const SizedBox(height: 8),
-              StarBar(rating: rating, size: 12),
-              const SizedBox(height: 20), // Adiciona espaço para o botão
+              const SizedBox(height: 3,),
+              const Text(
+                    'Valores',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 10),
+                  ),
+              const SizedBox(height: 3,),
+              Row(
+                children: [
+                  const Icon(Icons.attach_money, color: Colors.red,),
+                  const SizedBox(width: 2,),
+                  Text(
+                    widget.userinfo['valmin'] ?? '0',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                  const SizedBox(width: 10,),
+                  const Icon(Icons.attach_money, color: Colors.green,),
+                  const SizedBox(width: 2,),
+                  Text(
+                    widget.userinfo['valmax'] ?? '0',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                ],
+              ),
             ],
           ),
           Positioned(
             bottom: 0,
             right: 0,
             child: ElevatedButton(
-              onPressed: () {
-                authService.setprojectorfreelancers(userinfo['id'],useremail);
-              },
+             onPressed: () async {
+              await widget.authService.setprojectorfreelancers(widget.userinfo['id'], widget.useremail);
+              String? receiverUserID ;
+            String? chatvery = await widget.authService.getChatRoomId(widget.useremail, widget.userinfo['emailcli']);
+            if (chatvery == null) {
+              String chatRoomId = await widget.authService.createChatrooms(widget.useremail, widget.userinfo['emailcli']);
+              receiverUserID = await widget.authService.receiverUserID(widget.useremail, widget.userinfo['emailcli'],widget.freeorcli,chatRoomId);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPageNew(receiverUserID: receiverUserID!, chatRoomId: chatRoomId, authService: widget.authService, email: widget.userinfo['emailcli']),));
+            }
+            receiverUserID = await widget.authService.receiverUserID(widget.useremail, widget.userinfo['emailcli'],widget.freeorcli,chatvery!);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPageNew(receiverUserID: receiverUserID!, chatRoomId: chatvery, authService: widget.authService, email: widget.userinfo['emailcli']),));
+              
+              setState(() {
+                // Sem lógica adicional, apenas para garantir que a tela inteira seja reconstruída.
+              });
+            },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 30, 81, 250),
                 padding:

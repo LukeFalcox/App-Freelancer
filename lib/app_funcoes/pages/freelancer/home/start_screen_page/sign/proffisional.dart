@@ -9,7 +9,9 @@ import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_pa
 
 class Profissional extends StatefulWidget {
   final AuthService authService;
-   Profissional({super.key, required this.authService});
+  final String? email;
+  final String? password;
+  Profissional(this.authService, this.email, this.password, {super.key});
 
   @override
   State<Profissional> createState() => _ProfissionalState();
@@ -47,7 +49,7 @@ class _ProfissionalState extends State<Profissional> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+     appBar : AppBar(
         title: const Text(
           "Áreas",
           style: TextStyle(
@@ -55,6 +57,12 @@ class _ProfissionalState extends State<Profissional> {
             fontSize: 22,
             color: Colors.white,
           ),
+        ),
+         leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Ícone de seta
+          onPressed: () {
+            Navigator.pop(context); // Volta para a tela anterior
+          },
         ),
         backgroundColor: const Color.fromARGB(255, 30, 81, 250),
         elevation: 0,
@@ -89,7 +97,7 @@ class _ProfissionalState extends State<Profissional> {
                     area: "ti",
                     tit: "Informática",
                     destinationWidget:
-                        PreRegister(authService: widget.authService), 
+                        PreRegister(authService: widget.authService, email: widget.email, password: widget.password,area: 'ti',), 
                   ),
                   Constructorcards(
                     image: "image/img/administration.png",
@@ -98,7 +106,7 @@ class _ProfissionalState extends State<Profissional> {
                     area: "administration",
                     tit: "Administração",
                     destinationWidget:
-                        PreRegister(authService: widget.authService), 
+                        PreRegister(authService: widget.authService, email: widget.email, password: widget.password,area: 'administration',), 
                   ),
                   Constructorcards(
                     image: "image/img/engineering.png",
@@ -107,7 +115,7 @@ class _ProfissionalState extends State<Profissional> {
                     area: "edifecation",
                     tit: "Engenharia",
                     destinationWidget:
-                        PreRegister(authService: widget.authService), 
+                        PreRegister(authService: widget.authService, email: widget.email, password: widget.password,area: 'edifecation',), 
                   ),
                 ],
               ),

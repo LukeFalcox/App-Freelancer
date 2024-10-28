@@ -33,6 +33,9 @@ class _HomePageState extends State<HomePage> {
   Future<void> _initializeUserInfo() async {
     currentUserEmail = _firebaseAuth.currentUser!.email.toString();
     userinfo = await authService.verificationTypeUser(currentUserEmail);
+    if (userinfo == null) {
+      Navigator.pop(context);
+    }
     freeorcli = userinfo!['isFreelancer'];
     setState(() {}); // Atualiza a UI depois de obter os dados
   }
@@ -63,7 +66,7 @@ class _HomePageState extends State<HomePage> {
             Home(authService: authService, freeorcli:freeorcli),
             ProfileScreen(freeorcli: freeorcli),
             HomepageChat(freeorcli: freeorcli),
-            Paymentscreen()
+            // Paymentscreen()
           ],
         ),
       ),
@@ -86,11 +89,6 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.chat_bubble,
                 color: Color.fromARGB(255, 30, 81, 250)),
             label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble,
-                color: Color.fromARGB(255, 30, 81, 250)),
-            label: 'Pagamento(Teste)',
           ),
         ],
         onTap: (page) {

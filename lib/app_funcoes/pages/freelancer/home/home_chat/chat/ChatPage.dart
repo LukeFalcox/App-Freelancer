@@ -43,7 +43,7 @@ class _ChatPageNewState extends State<ChatPageNew> {
         child: Padding(
           padding: const EdgeInsets.only(top: 5),
           child: AppBar(
-            leadingWidth: 30,
+            leadingWidth: 50,
             title: Row(
               children: [
                 Padding(
