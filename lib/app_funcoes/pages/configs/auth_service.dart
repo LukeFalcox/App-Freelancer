@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // Para kIsWeb
+import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart'; // Para kIsWeb
 // import 'package:image_picker/image_picker.dart';
 
 class AuthService extends ChangeNotifier {
@@ -658,6 +659,36 @@ Stream<int> countNewMessagesStream(String chatRoomId) async* {
   // ============================================================//
   // ===========================PROFILE==========================//
   // ============================================================//
+
+
+    Future<XFile?> getimage() async {
+        final ImagePicker _picker = ImagePicker();
+        XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+        return image;
+    }
+
+    Future<void> upload(String path) async{
+        File file = File(path);
+        try{
+              String ref = 'images/img-${DateTime.now().toString()}.jpg';
+              
+              await _firebaseStorage.ref(ref).putFile(file);
+        } on FirebaseException catch(e){
+          throw Exception('Erro no upload: ${e.code} ');
+        }
+    }
+
+    pickandUploadImage() async {
+      XFile? file = await getimage();
+      if (file != null) {
+        await upload(file.path);
+        
+      }
+
+    }
+
+
+
   Future<List<Map<String, dynamic>>?> getProjects(String email) async {
   try {
     // Busca o freelancer pelo email
@@ -739,79 +770,8 @@ Future<void> updateProjects(String email, String frase) async {
 
 
 
- Future<String> getImageUrl(String imagePath) async {
-  try {
 
-    // Obtém a URL de download para a imagem
-    String downloadURL = await _firebaseStorage.ref(imagePath).getDownloadURL();
-    return downloadURL;
-  } on FirebaseException catch (e) {
-    throw Exception('Erro ao obter URL da imagem: ${e.code}');
-  }
-}
-
-
-Future<String?> uploadMobile(String path, String userEmail) async {
-    final file = File(path);
-    try {
-      final Uint8List fileBytes = await file.readAsBytes();
-      final ref = _firebaseStorage.ref().child('images/$userEmail/Usuario/Perfil.jpg');
-      
-      final uploadTask = ref.putData(fileBytes);
-      await uploadTask.whenComplete(() => null);
-      
-      final imageUrl = await ref.getDownloadURL();
-      return imageUrl;
-    } on FirebaseException catch (e) {
-      print("Erro no upload: ${e.code}");
-      return null;
-    }
-  }
-
-  Future<String?> getProfileImageUrl(String userEmail) async {
-    try {
-      final ref = FirebaseStorage.instance.ref().child('images/$userEmail/Usuario/Perfil.jpg');
-      final imageUrl = await ref.getDownloadURL();
-      return imageUrl;
-    } catch (e) {
-      print("Erro ao obter a URL da imagem: $e");
-      return null;
-    }
-  }
-
-
-  // Future<String?> uploadWeb(html.File file, String userEmail) async {
-  //   try {
-  //     final reader = html.FileReader();
-  //     reader.readAsArrayBuffer(file);
-
-  //     final Completer<String?> completer = Completer<String?>();
-  //     reader.onLoadEnd.listen((_) async {
-  //       final Uint8List fileBytes = reader.result as Uint8List;
-  //       final ref = _firebaseStorage.ref().child('images/$userEmail/Usuario/Perfil.jpg');
-        
-  //       try {
-  //         final uploadTask = ref.putData(fileBytes);
-  //         await uploadTask.whenComplete(() => null);
-  //         final imageUrl = await ref.getDownloadURL();
-  //         completer.complete(imageUrl);
-  //       } catch (e) {
-  //         print("Erro no upload: $e");
-  //         completer.complete(null);
-  //       }
-  //     });
-
-  //     reader.onError.listen((e) {
-  //       print("Erro no upload: $e");
-  //       completer.complete(null);
-  //     });
-
-  //     return completer.future;
-  //   } catch (e) {
-  //     print("Erro no upload: $e");
-  //     return null;
-  //   }
-  // }
+ 
 
 
 

@@ -108,15 +108,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Container(
                     padding: const EdgeInsets.all(16),
                     child: Column(children: [
-                     ClipRRect(
-  borderRadius: BorderRadius.circular(100),
-  child: Image.asset(
-    'image/img/user.png',
-     height: 100,
-    fit: BoxFit.cover, // Isso ajusta a imagem de acordo com o widget pai
-  ),
-),
-
+                      GestureDetector(
+                        onTap: () async{
+                          await authService.pickandUploadImage();
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.asset(
+                            'image/img/user.png',
+                            height: 100,
+                            fit: BoxFit
+                                .cover, // Isso ajusta a imagem de acordo com o widget pai
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 10),
                       Text(
                         name,
@@ -160,34 +165,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const Divider(),
                       const SizedBox(height: 10),
                       if (!widget.freeorcli)
-                      ProfileMenuWidget(
-                        title: 'Criar Projetos',
-                        onPress: () {  
-                          Navigator.push(
+                        ProfileMenuWidget(
+                          title: 'Criar Projetos',
+                          onPress: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>  CriarProjetoScreen(authService: authService,useremail: userEmail,)
-                              ),
+                                  builder: (context) => CriarProjetoScreen(
+                                        authService: authService,
+                                        useremail: userEmail,
+                                      )),
                             );
-                        },
-                        icon: Ionicons.paper_plane,
-                      ),
-                      
-                          ProfileMenuWidget(
+                          },
+                          icon: Ionicons.paper_plane,
+                        ),
+                      ProfileMenuWidget(
                         title: 'Meus Projetos',
                         onPress: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProjectsScreen(authService:authService ,freeorcli:widget.freeorcli ,useremail:userEmail ,)
-                              ),
-                            );
-                          
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProjectsScreen(
+                                      authService: authService,
+                                      freeorcli: widget.freeorcli,
+                                      useremail: userEmail,
+                                    )),
+                          );
                         },
                         icon: Ionicons.paper_plane,
                       ),
-                      
-                      
                       ProfileMenuWidget(
                         title: 'Ajuda',
                         onPress: () {},
