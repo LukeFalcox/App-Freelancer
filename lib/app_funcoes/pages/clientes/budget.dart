@@ -9,11 +9,11 @@ class Budget extends StatefulWidget {
   final AuthService authService;
   
   const Budget({
-    Key? key,
+    super.key,
     required this.area,
     required this.authService,
     required this.userEmail,
-  }) : super(key: key);
+  });
 
   @override
   _BudgetState createState() => _BudgetState();
@@ -276,18 +276,18 @@ class _BudgetState extends State<Budget> {
     );
   }
 
-void _showFreelancersInfo(String? type, String valorselect, DateTime? _dataInicio,  DateTime? _dataFim) async {
+void _showFreelancersInfo(String? type, String valorselect, DateTime? dataInicio,  DateTime? dataFim) async {
   // Verifica se as datas de início e fim foram selecionadas
-  if (_dataInicio == null || _dataFim == null) {
+  if (dataInicio == null || dataFim == null) {
     // Mostra uma mensagem de erro se as datas não foram selecionadas
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Por favor, selecione as datas de início e fim.'))
+      const SnackBar(content: Text('Por favor, selecione as datas de início e fim.'))
     );
     return;
   }
 
   // Calcula a diferença em dias entre a data de fim e a data de início
-  final datalimite = _dataFim.difference(_dataInicio).inDays;
+  final datalimite = dataFim.difference(dataInicio).inDays;
 
   // Abre o modal de freelancers
   showModalBottomSheet(
@@ -367,7 +367,7 @@ Future<List<DocumentSnapshot>> _fetchFreelancers(String? type, String valorselec
     throw ArgumentError('O campo "type" não pode ser nulo ou vazio.');
   }
 
-  double valorMaximo = double.tryParse(valorselect) ?? 0;
+  
 
   await Future.delayed(const Duration(seconds: 2));
 

@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart'; // Para kIsWeb
 // import 'package:image_picker/image_picker.dart';
 
@@ -216,6 +215,7 @@ Future<void> setprojectorfreelancers(String id, String email) async {
     }
   }
 
+  // ignore: non_constant_identifier_names
   Future<UserCredential> register_users(
       String email, String password, String type) async {
     try {
@@ -583,7 +583,7 @@ Stream<int> countNewMessagesStream(String chatRoomId) async* {
       .snapshots()
       .map((snapshot) {
         return snapshot.docs
-            .where((doc) => (doc.data() as Map<String, dynamic>)['senderId'] != currentUserId)
+            .where((doc) => (doc.data())['senderId'] != currentUserId)
             .length;
       });
 }
@@ -662,8 +662,8 @@ Stream<int> countNewMessagesStream(String chatRoomId) async* {
 
 
     Future<XFile?> getimage() async {
-        final ImagePicker _picker = ImagePicker();
-        XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+        final ImagePicker picker = ImagePicker();
+        XFile? image = await picker.pickImage(source: ImageSource.gallery);
         return image;
     }
 
@@ -952,7 +952,7 @@ Future<void> saveProjects(
   String titulo, 
   String valmin, 
   String valmax, 
-  String _status,
+  String status,
   DateTime? fim
 ) async {
   // Cria um mapa com as informações do projeto (sem o ID ainda)
@@ -965,7 +965,7 @@ Future<void> saveProjects(
     "ferramentas": ferramentas,
     "titulo": titulo,
     "valmin": valmin,
-    "status": _status,
+    "status": status,
     "valmax": valmax,
     "dtfim": fim?.toIso8601String(),
   };
@@ -1161,7 +1161,7 @@ Future<List<String>> getHab(String area, String type) async {
           List<dynamic>? arrayTI = map[area];
 
           // Converte o array de dinâmico para lista de strings
-          if (arrayTI != null && arrayTI is List) {
+          if (arrayTI != null) {
             // Filtra apenas strings para garantir consistência
             List<String> validList = arrayTI.whereType<String>().toList();
             return validList;
@@ -1189,12 +1189,12 @@ Future<List<String>> getHab(String area, String type) async {
 
 
 
-Future<void> save_classification(Map<int, bool> _selectedItems, List<String> items, String email) async {
+Future<void> saveClassification(Map<int, bool> selectedItems, List<String> items, String email) async {
   List<dynamic> itemsT = []; 
   List<dynamic> saveItems = [];
 
   // Mapeando os índices dos itens selecionados
-  _selectedItems.forEach((key, value) {
+  selectedItems.forEach((key, value) {
     if (value == true) {
       itemsT.add(key);
     }

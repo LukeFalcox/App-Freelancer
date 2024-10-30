@@ -1,8 +1,6 @@
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
-import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_page.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/checkbox.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/login_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +21,6 @@ class _PreRegisterState extends State<PreRegister> {
   final TextEditingController _projectsController = TextEditingController();
   final TextEditingController _experiencesController = TextEditingController();
   final TextEditingController _averageValueController = TextEditingController();
-  late FirebaseAuth _auth;
   List<String> linguagens = [];
   List<String> classificationItems = [];
   String? dropdownValue;
@@ -32,12 +29,11 @@ class _PreRegisterState extends State<PreRegister> {
   List<String> selectedItems = [];
   DateTime? _dataInicio;
   DateTime? _dataFim;
-  var datalimite;
+  int? datalimite;
 
   @override
   void initState() {
     super.initState();
-    _auth = FirebaseAuth.instance;
     _loadLanguages();
     _loadClassifications();
   }

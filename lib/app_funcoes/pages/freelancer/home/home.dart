@@ -402,7 +402,7 @@ class UserCard extends StatefulWidget {
   final bool freeorcli;
 
   const UserCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.useremail,
     required this.rating,
@@ -410,7 +410,7 @@ class UserCard extends StatefulWidget {
     required this.userinfo,
     required this.authService,
     required this.freeorcli,
-  }) : super(key: key);
+  });
 
   @override
   State<UserCard> createState() => _UserCardState();
@@ -554,13 +554,13 @@ Widget _buildFreelancerCard(BuildContext context) {
             const SizedBox(height: 5),
             StarBar(rating: widget.rating, size: 12),
               Text(
-                "Titulo: ${widget.userinfo['titulo']}" ?? 'Título Desconhecido',
+                "Titulo: ${widget.userinfo['titulo']}",
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
               const SizedBox(height: 4),
               Text(
-                "Desc: ${widget.userinfo['desc']}" ?? 'Descrição não disponível',
+                "Desc: ${widget.userinfo['desc']}",
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 10),

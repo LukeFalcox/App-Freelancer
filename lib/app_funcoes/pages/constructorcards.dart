@@ -12,14 +12,14 @@ class Constructorcards extends StatefulWidget {
   final String area;
 
   const Constructorcards({
-    Key? key,
+    super.key,
     required this.image,
     required this.tit,
     required this.destinationWidget,
     required this.email,
     required this.authService,
     required this.area,
-  }) : super(key: key);
+  });
 
   @override
   State<Constructorcards> createState() => _ConstructorcardsState();

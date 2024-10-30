@@ -5,10 +5,8 @@ import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/pr
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:provider/provider.dart';
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/editprofile.dart';
-import 'ratingwidget.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool freeorcli;
@@ -295,7 +293,7 @@ class StarBar extends StatelessWidget {
         }
       }
       starList.add(const SizedBox(width: 3));
-      starList.add(Text('(${fullStars})'));
+      starList.add(Text('($fullStars)'));
     }
 
     return Row(mainAxisSize: MainAxisSize.min, children: starList);

@@ -3,7 +3,6 @@ import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/ra
 import 'package:flutter/material.dart'; // Importa o pacote principal do Flutter
 import 'package:intl/intl.dart'; // Importa a biblioteca Intl para manipulação de datas
 import 'project_detail_screen.dart'; // Importa a tela de detalhes do projeto
-import 'package:flutter/material.dart';
 
 class ProjectsScreen extends StatefulWidget {
   final AuthService authService;
@@ -36,11 +35,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   }
 
   void _showPaymentDialog(BuildContext context, String email) {
-    final TextEditingController _cardNumberController = TextEditingController();
-    final TextEditingController _cardNameController = TextEditingController();
-    final TextEditingController _valorController = TextEditingController();
-    final TextEditingController _expiryDateController = TextEditingController();
-    final TextEditingController _cvvController = TextEditingController();
+    final TextEditingController cardNumberController = TextEditingController();
+    final TextEditingController cardNameController = TextEditingController();
+    final TextEditingController valorController = TextEditingController();
+    final TextEditingController expiryDateController = TextEditingController();
+    final TextEditingController cvvController = TextEditingController();
 
     showDialog(
       context: context,
@@ -52,20 +51,20 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  controller: _cardNumberController,
+                  controller: cardNumberController,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     labelText: 'Número do Cartão',
                   ),
                 ),
                 TextField(
-                  controller: _cardNameController,
+                  controller: cardNameController,
                   decoration: const InputDecoration(
                     labelText: 'Nome no Cartão',
                   ),
                 ),
                 TextField(
-                  controller: _expiryDateController,
+                  controller: expiryDateController,
                   keyboardType: TextInputType.datetime,
                   decoration: const InputDecoration(
                     labelText: 'Data de Validade',
@@ -73,7 +72,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
                 ),
                 TextField(
-                  controller: _cvvController,
+                  controller: cvvController,
                   keyboardType: TextInputType.number,
                   obscureText: true,
                   decoration: const InputDecoration(
@@ -81,7 +80,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   ),
                 ),
                 TextField(
-                  controller: _valorController,
+                  controller: valorController,
                   keyboardType: TextInputType.number,
                   obscureText: true,
                   decoration: const InputDecoration(
@@ -101,16 +100,16 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             ElevatedButton(
               onPressed: () {
                 widget.authService.realizarPagamento(
-                    _cardNameController.text,
-                    _cardNumberController.text,
-                    _expiryDateController.text,
-                    _valorController.text,
-                    _cvvController.text,
+                    cardNameController.text,
+                    cardNumberController.text,
+                    expiryDateController.text,
+                    valorController.text,
+                    cvvController.text,
                     email);
                 widget.authService.updateProjects(email, 'Pago');
                 Navigator.of(context).pop();
                 print(
-                    'Pagamento realizado para o cartão: $_cardNumberController.text');
+                    'Pagamento realizado para o cartão: $cardNumberController.text');
               },
               child: const Text('Confirmar Pagamento'),
             ),
@@ -341,7 +340,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 class ProjectWidget extends StatelessWidget {
   final Map<String, dynamic> project;
 
-  ProjectWidget({required this.project});
+  const ProjectWidget({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,5 @@
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/login_page.dart';
-import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/pre-register.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/preregistercliente.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/start_screen_page/sign/proffisional.dart';
 import 'package:flutter/material.dart';

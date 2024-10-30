@@ -1,6 +1,5 @@
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 class PreRegisterCliente extends StatefulWidget {
@@ -19,12 +18,10 @@ class _PreRegisterClienteState extends State<PreRegisterCliente> {
   final TextEditingController _telefoneController= TextEditingController();
   final TextEditingController _cnpjcpfController = TextEditingController();
   bool _isSaving = false;
-  late FirebaseAuth _auth;
 
   @override
   void initState() {
     super.initState();
-    _auth = FirebaseAuth.instance;
   }  
 
   bool _isFormValid() {
@@ -48,7 +45,7 @@ class _PreRegisterClienteState extends State<PreRegisterCliente> {
 
   try {
     await Future.delayed(const Duration(seconds: 2));
-    await widget.authService.register_users(widget.email!, widget.password!, 'freelancers');
+    await widget.authService.register_users(widget.email, widget.password, 'freelancers');
     await widget.authService.savePreregisterCliente(
       _descCotrroler.text,
       _nameController.text,

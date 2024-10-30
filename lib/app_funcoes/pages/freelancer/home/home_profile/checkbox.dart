@@ -8,7 +8,7 @@ class CheckboxWidget extends StatefulWidget {
   final String email;
   final Function(List<String>) onSelectionChanged; // Novo callback
 
-  CheckboxWidget({
+  const CheckboxWidget({
     super.key,
     required this.items,
     required this.authservice,

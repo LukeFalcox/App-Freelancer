@@ -71,7 +71,7 @@ class HomepageChat extends StatelessWidget {
                 ),
               ),
             ),
-            Activechats(),
+            const Activechats(),
             const SizedBox(height: 20),
             Recentchats(freeorcli: freeorcli), // Corrigido aqui
           ],

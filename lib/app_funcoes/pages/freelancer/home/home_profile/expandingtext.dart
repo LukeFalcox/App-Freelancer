@@ -42,7 +42,7 @@ class _ExpandingTextFormState extends State<ExpandingTextForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.title, style: GoogleFonts.robotoMono(fontSize: 20)),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -56,7 +56,7 @@ class _ExpandingTextFormState extends State<ExpandingTextForm> {
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: widget.hintText,
-              contentPadding: EdgeInsets.all(8), // Adiciona um pouco de padding interno
+              contentPadding: const EdgeInsets.all(8), // Adiciona um pouco de padding interno
             ),
           ),
         ),

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class Recentchats extends StatefulWidget {
   final bool freeorcli;
-  Recentchats({super.key, required this.freeorcli});
+  const Recentchats({super.key, required this.freeorcli});
 
   @override
   State<Recentchats> createState() => _RecentchatsState();
@@ -239,7 +239,7 @@ class _RecentchatsState extends State<Recentchats> {
 
                                     String timeWithoutSeconds = formattedTime
                                         .substring(0, 5); // "HH:mm"
-                                    return Text("${timeWithoutSeconds}");
+                                    return Text(timeWithoutSeconds);
                                   } else {
                                     return Container();
                                   }

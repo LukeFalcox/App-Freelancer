@@ -18,7 +18,7 @@ class ProjectDetailScreen extends StatefulWidget {
 }
 
 class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
-  late String _status; // Armazena o status atual do projeto
+// Armazena o status atual do projeto
 
   @override
   void initState() {
@@ -27,11 +27,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
   }
 
   // Função para alterar o status do projeto
-  void _toggleStatus() {
-    setState(() {
-      _status = (_status == 'Ativo') ? 'Inativo' : 'Ativo'; // Alterna entre Ativo e Inativo
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

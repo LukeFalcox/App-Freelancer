@@ -11,7 +11,7 @@ class Profissional extends StatefulWidget {
   final AuthService authService;
   final String? email;
   final String? password;
-  Profissional(this.authService, this.email, this.password, {super.key});
+  const Profissional(this.authService, this.email, this.password, {super.key});
 
   @override
   State<Profissional> createState() => _ProfissionalState();

@@ -1,17 +1,14 @@
 import 'package:app_freelancer/app_funcoes/pages/configs/auth_service.dart';
-import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_page.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/checkbox.dart';
 import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/expandingtext.dart';
-import 'package:app_freelancer/app_funcoes/pages/freelancer/home/home_profile/profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class Editprofile extends StatefulWidget {
-  const Editprofile({Key? key}) : super(key: key);
+  const Editprofile({super.key});
 
   @override
   State<Editprofile> createState() => _EditprofileState();
@@ -26,9 +23,6 @@ class _EditprofileState extends State<Editprofile> {
   late String userEmail;
   Map<String, dynamic>? infos;
    Map<int, bool> selectedCheckboxes = {};
-
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -142,7 +136,7 @@ class _EditprofileState extends State<Editprofile> {
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(
-      builder: (context) => HomePage(),
+      builder: (context) => const HomePage(),
     ),
   );
 },
