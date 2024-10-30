@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   int currentPage = 0;
   late PageController pageCont;
-  Map<String, dynamic>? userinfo; // Define como opcional (pode ser nulo)
+  late Future<Map<String, dynamic>?> userinfoFuture; // Declare a future para carregar os dados do usuário
   late String currentUserEmail;
   bool freeorcli = false;
   final AuthService authService = AuthService();
@@ -27,17 +27,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     pageCont = PageController(initialPage: currentPage);
-    _initializeUserInfo(); // Chama a função assíncrona para carregar os dados
+    userinfoFuture = _initializeUserInfo(); // Inicia a função que carrega os dados
   }
 
-  Future<void> _initializeUserInfo() async {
+  Future<Map<String, dynamic>?> _initializeUserInfo() async {
     currentUserEmail = _firebaseAuth.currentUser!.email.toString();
-    userinfo = await authService.verificationTypeUser(currentUserEmail);
-    if (userinfo == null) {
-      Navigator.pop(context);
-    }
-    freeorcli = userinfo!['isFreelancer'];
-    setState(() {}); // Atualiza a UI depois de obter os dados
+    return await authService.verificationTypeUser(currentUserEmail);
   }
 
   setCurrentPage(page) {
@@ -48,27 +43,36 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Verifica se os dados do userinfo foram carregados
-    if (userinfo == null) {
-      return const Center(
-        child: CircularProgressIndicator(), // Exibe um indicador de carregamento enquanto userinfo está nulo
-      );
-    }
-
     return Scaffold(
-      body: PopScope(
-        canPop: false,
-        child: PageView(
-          controller: pageCont,
-          onPageChanged: setCurrentPage,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            Home(authService: authService, freeorcli:freeorcli),
-            ProfileScreen(freeorcli: freeorcli),
-            HomepageChat(freeorcli: freeorcli),
-            // Paymentscreen()
-          ],
-        ),
+      body: FutureBuilder<Map<String, dynamic>?>(
+        future: userinfoFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Enquanto os dados estão sendo carregados
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError || snapshot.data == null) {
+            // Em caso de erro ou dados nulos
+            return const Center(child: Text('Erro ao carregar informações.'));
+          }
+
+          // Dados carregados com sucesso
+          final userinfo = snapshot.data!;
+          freeorcli = userinfo['isFreelancer'];
+
+          return PageView(
+            controller: pageCont,
+            onPageChanged: setCurrentPage,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              Home(authService: authService, freeorcli: freeorcli),
+              ProfileScreen(freeorcli: freeorcli, authService: authService,),
+              HomepageChat(freeorcli: freeorcli),
+              // Paymentscreen()
+            ],
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: true,

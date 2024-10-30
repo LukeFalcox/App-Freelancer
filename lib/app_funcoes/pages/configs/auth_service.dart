@@ -667,21 +667,92 @@ Stream<int> countNewMessagesStream(String chatRoomId) async* {
         return image;
     }
 
-    Future<void> upload(String path) async{
-        File file = File(path);
-        try{
-              String ref = 'images/img-${DateTime.now().toString()}.jpg';
-              
-              await _firebaseStorage.ref(ref).putFile(file);
-        } on FirebaseException catch(e){
-          throw Exception('Erro no upload: ${e.code} ');
-        }
-    }
+    Future<void> upload(String path, String email) async {
+  File file = File(path);
+  try {
+    String ref = 'images/img-${DateTime.now().toString()}.jpg';
+    
+    final QuerySnapshot<Map<String, dynamic>> freelancerSnapshot = await _firestore
+        .collection('freelancers')
+        .where('email', isEqualTo: email)
+        .get();
+    
+    if (freelancerSnapshot.docs.isNotEmpty) {
+      String documentId = freelancerSnapshot.docs.first.id;
 
-    pickandUploadImage() async {
+      await _firestore
+          .collection('freelancers')
+          .doc(documentId)
+          .update({'ref': ref});
+      
+      // Faz o upload do arquivo para o Firebase Storage
+      await _firebaseStorage.ref(ref).putFile(file);
+    } else {
+      final QuerySnapshot<Map<String, dynamic>> clienteSnapshot = await _firestore
+        .collection('clientes')
+        .where('email', isEqualTo: email)
+        .get();
+        if (clienteSnapshot.docs.isNotEmpty) {
+      String documentId = clienteSnapshot.docs.first.id;
+
+      await _firestore
+          .collection('clientes')
+          .doc(documentId)
+          .update({'ref': ref});
+      
+      // Faz o upload do arquivo para o Firebase Storage
+      await _firebaseStorage.ref(ref).putFile(file);
+    }
+    }
+  } on FirebaseException catch (e) {
+    throw Exception('Erro no upload: ${e.code}');
+  }
+}
+
+  Future<String> fetchImage(String email) async {
+  try {
+    // Buscando freelancer
+    final QuerySnapshot<Map<String, dynamic>> freelancerSnapshot = await _firestore
+        .collection('freelancers')
+        .where('email', isEqualTo: email)
+        .get();
+
+    if (freelancerSnapshot.docs.isNotEmpty) {
+      String caminhoImg = freelancerSnapshot.docs.first.data()['ref'];
+
+      Reference ref = FirebaseStorage.instance.ref(caminhoImg);
+      String url = await ref.getDownloadURL();
+      return url;
+    } else {
+      // Buscando cliente
+      final QuerySnapshot<Map<String, dynamic>> clienteSnapshot = await _firestore
+          .collection('clientes')
+          .where('email', isEqualTo: email)
+          .get();
+      
+      if (clienteSnapshot.docs.isNotEmpty) {
+        String caminhoImg = clienteSnapshot.docs.first.data()['ref']; // Correção aqui
+
+        Reference ref = FirebaseStorage.instance.ref(caminhoImg);
+        String url = await ref.getDownloadURL();
+        return url;
+      }
+    }
+    
+    return "erro"; // Caso não encontre nenhum documento
+  } catch (e) {
+    print('Erro ao buscar a imagem: $e');
+    return "erro"; // Retorna um erro genérico
+  }
+}
+
+  
+
+
+    pickandUploadImage(String email) async {
       XFile? file = await getimage();
       if (file != null) {
-        await upload(file.path);
+        await upload(file.path, email);
         
       }
 
